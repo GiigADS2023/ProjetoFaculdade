@@ -1,5 +1,5 @@
 <script>
-import { ref } for 'vue';
+import { ref } from 'vue';
 </script>
 
 <template>
