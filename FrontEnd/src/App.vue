@@ -1,108 +1,101 @@
+<template>
+  <nav class="sidebar close">
+    <header>
+        <div class="image-text">
+            <span class="image">
+                <img :src="logo" alt="Logo">
+            </span>
+
+            <div class="text logo-text">
+                <span class="name">CondoConnect</span>
+                <span class="profession">Condomínio Administrativo</span>
+            </div>
+        </div>
+
+        <i class='bx bx-chevron-right toggle'></i>
+    </header>
+
+    <div class="menu-bar">
+        <div class="menu">
+
+            <ul class="menu-links">
+                <li class="nav-link">
+                    <router-link :to="{ name: 'Home' }">
+                        <i class="bx bx-home-alt icon"></i>
+                        <span class="text nav-text">Visão Geral</span>
+                    </router-link>
+                </li>
+                
+                <li class="nav-link">
+                    <router-link :to="{ name: 'Reserve' }">
+                        <i class="bx bx-calendar icon" ></i>
+                        <span class="text nav-text">Reservas</span>
+                    </router-link>
+                </li>
+
+                <li class="nav-link">
+                    <router-link :to="{ name: 'Occurrence' }">
+                        <i class="bx bx-bell icon" ></i>
+                        <span class="text nav-text">Ocorrências</span>
+                    </router-link>
+                </li>
+
+                <li class="nav-link">
+                    <router-link :to="{ name: 'LostFound' }">
+                        <i class="bx bx-like icon" ></i>
+                        <span class="text nav-text">Achados e perdidos</span>
+                    </router-link>
+                </li>
+
+                <li class="nav-link">
+                    <router-link :to="{ name: 'Meeting' }">
+                        <i class="bx bx-user-voice icon" ></i>
+                        <span class="text nav-text">Reuniões</span>
+                    </router-link>
+                </li>
+
+            </ul>
+        </div>
+
+        <div class="bottom-content">
+            <li>
+                <a href="#">
+                    <i class='bx bx-log-out icon' ></i>
+                    <span class="text nav-text">Sair</span>
+                </a>
+            </li>
+        </div>
+    </div>
+</nav>
+
+<div>
+  <RouterView>
+  </RouterView>
+</div>
+</template>
+
 <script>
+import { ref, onMounted } from 'vue';
 import { RouterView } from 'vue-router';
 import logo from '@/assets/logo.png';
 
 export default {
-    name: 'Sidebar',
-    data() {
-        return {
-            logo: logo
-        };
-    },
-mounted() {
-    this.$nextTick(() => {
-        const sidebar = document.querySelector('.sidebar');
-        const toggle = sidebar.querySelector(".toggle");
-        const searchBtn = sidebar.querySelector(".search-box");
-        const modeSwitch = sidebar.querySelector(".toggle-switch");
-        const modeText = sidebar.querySelector(".mode-text");
-
-        toggle.addEventListener("click" , () => {
-            sidebar.classList.toggle("close");
-        });
+  setup() {
+    onMounted(() => {
+      const sidebar = document.querySelector('.sidebar');
+      const toggle = sidebar.querySelector(".toggle");
+      
+      toggle.addEventListener("click", () => {
+        sidebar.classList.toggle("close");
+      });
     });
-}
+
+    return {
+      logo
+    };
+  }
 }
 </script>
-
-<template>
-  <div id="app">
-    <nav class="sidebar close">
-        <header>
-            <div class="image-text">
-                <span class="image">
-                    <img :src="logo" alt="Logo">
-                </span>
-
-                <div class="text logo-text">
-                    <span class="name">CondoConnect</span>
-                    <span class="profession">Condomínio Administrativo</span>
-                </div>
-            </div>
-
-            <i class='bx bx-chevron-right toggle'></i>
-        </header>
-
-        <div class="menu-bar">
-            <div class="menu">
-
-                <ul class="menu-links">
-                    <li class="nav-link">
-                        <router-link :to="{ name: 'Home' }">
-                            <i class="bx bx-home-alt icon"></i>
-                            <span class="text nav-text">Visão Geral</span>
-                        </router-link>
-                    </li>
-                    
-                    <li class="nav-link">
-                        <router-link :to="{ name: 'Reserve' }">
-                            <i class="bx bx-calendar icon" ></i>
-                            <span class="text nav-text">Reservas</span>
-                        </router-link>
-                    </li>
-
-                    <li class="nav-link">
-                        <router-link :to="{ name: 'Occurrence' }">
-                            <i class="bx bx-bell icon" ></i>
-                            <span class="text nav-text">Ocorrências</span>
-                        </router-link>
-                    </li>
-
-                    <li class="nav-link">
-                        <router-link :to="{ name: 'LostFound' }">
-                            <i class="bx bx-like icon" ></i>
-                            <span class="text nav-text">Achados e perdidos</span>
-                        </router-link>
-                    </li>
-
-                    <li class="nav-link">
-                        <router-link :to="{ name: 'Meeting' }">
-                            <i class="bx bx-user-voice icon" ></i>
-                            <span class="text nav-text">Reuniões</span>
-                        </router-link>
-                    </li>
-
-                </ul>
-            </div>
-
-            <div class="bottom-content">
-                <li>
-                    <a href="#">
-                        <i class='bx bx-log-out icon' ></i>
-                        <span class="text nav-text">Sair</span>
-                    </a>
-                </li>
-            </div>
-        </div>
-    </nav>
-    <div class="pagina">
-      <router-view></router-view>
-    </div>
-    
-  </div>
-</template>
-
-
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
@@ -112,9 +105,7 @@ mounted() {
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
-.pagina{
-  padding-left: 100px;
-}
+
 :root{
     /* ===== Colors ===== */
     --body-color: #E4E9F7;

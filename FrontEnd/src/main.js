@@ -5,7 +5,7 @@ import Home from './views/Home.vue';
 import Occurrence from './views/Occurrence.vue';
 import LostFound from './views/LostFound.vue';
 import Meeting from './views/Meeting.vue';
-import Reserve from './views/Reserve.vue'; 
+import Reserve from './views/CalendarReserve.vue'; 
 
 const routes = [
   { path: '/', component: Home },
@@ -20,5 +20,5 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
 });
-
+export default router
 createApp(App).use(router).mount('#app')

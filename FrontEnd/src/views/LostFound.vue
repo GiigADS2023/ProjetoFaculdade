@@ -120,7 +120,7 @@ export default {
   font-family: 'Poppins', sans-serif;
 }
 
-template{
+.container {
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -133,7 +133,7 @@ template{
   text-align: left;
   margin-top: 25px;
   margin-bottom: 20px;
-  margin-left: 120px;
+  margin-left: 180px;
   position: fixed;
   top: 0;
   left: 0;
@@ -176,7 +176,7 @@ button {
   width: 80%;
   height: 75%;
   margin-top: 115px;
-  margin-left: 50px;
+  margin-left: 180px;
   border: none;
   background: white;
     position: fixed;
@@ -200,7 +200,7 @@ button {
   font-size: 16px;
   padding: 8px;
   border-radius: 5px;
-  border: 1px solid #C4C4C4; /* Adicione uma borda sólida */
+  border: 1px solid #C4C4C4; 
   color: #4070EC;
   background-color: white;
 }
@@ -268,7 +268,7 @@ tbody tr td.acao {
 }
 
 @media (max-width: 700px) {
-  template {
+  .container {
     font-size: 10px;
   }
   
