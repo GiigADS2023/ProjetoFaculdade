@@ -133,7 +133,7 @@ template{
   text-align: left;
   margin-top: 25px;
   margin-bottom: 20px;
-  margin-left: 180px;
+  margin-left: 120px;
   position: fixed;
   top: 0;
   left: 0;
@@ -176,7 +176,7 @@ button {
   width: 80%;
   height: 75%;
   margin-top: 115px;
-  margin-left: 180px;
+  margin-left: 50px;
   border: none;
   background: white;
     position: fixed;
