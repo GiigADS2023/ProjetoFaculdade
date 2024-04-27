@@ -1,5 +1,6 @@
 package com.senac.CondoConnect.Model;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
 
@@ -17,7 +18,7 @@ public class AssembleiaModel {
 	@Column
 	private String descricao;
 	@Column
-	private Date data;
+	private LocalDate data;
 	@ManyToOne
 	private UsuarioModel usuario;
 	
@@ -39,10 +40,10 @@ public class AssembleiaModel {
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
 	}
-	public Date getData() {
+	public LocalDate getData() {
 		return data;
 	}
-	public void setData(Date data) {
+	public void setData(LocalDate data) {
 		this.data = data;
 	}
 	public UsuarioModel getUsuario() {
