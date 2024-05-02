@@ -1,5 +1,7 @@
 package com.senac.CondoConnect.dtos;
 
-public record ComunicadoRecord(String titulo, String dscricao, UsuarioRecord usuario) {
+import java.time.LocalDate;
+
+public record ComunicadoRecord(String tituloComunicado, String descricaoComunicado, boolean tipoComunicado, LocalDate dataComunicado, UsuarioRecord usuario) {
 
 }

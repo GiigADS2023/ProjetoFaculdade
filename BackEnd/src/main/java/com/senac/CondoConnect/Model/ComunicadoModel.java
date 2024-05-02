@@ -1,5 +1,7 @@
 package com.senac.CondoConnect.Model;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.UUID;
 
 import jakarta.persistence.*;
@@ -17,6 +19,8 @@ public class ComunicadoModel {
 	private String descricaoComunicado;
 	@Column(nullable= false)
 	private boolean tipoComunicado;
+	@Column
+	private LocalDate dataComunicado;
 	@ManyToOne
 	private UsuarioModel usuario;
 	
@@ -26,22 +30,22 @@ public class ComunicadoModel {
 	public void setId(UUID id) {
 		this.id = id;
 	}
-	public String getTituloComunicado() {
+	public String gettituloComunicado() {
 		return tituloComunicado;
 	}
-	public void setTituloComunicado(String tituloComunicado) {
+	public void settituloComunicado(String tituloComunicado) {
 		this.tituloComunicado = tituloComunicado;
 	}
-	public String getDescricaoComunicado() {
+	public String getdescricaoComunicado() {
 		return descricaoComunicado;
 	}
-	public void setDescricaoComunicado(String descricaoComunicado) {
+	public void setdescricaoComunicado(String descricaoComunicado) {
 		this.descricaoComunicado = descricaoComunicado;
 	}
-	public boolean isTipoComunicado() {
+	public boolean istipoComunicado() {
 		return tipoComunicado;
 	}
-	public void setTipoComunicado(boolean tipoComunicado) {
+	public void settipoComunicado(boolean tipoComunicado) {
 		this.tipoComunicado = tipoComunicado;
 	}
 	public UsuarioModel getUsuario() {
@@ -49,6 +53,12 @@ public class ComunicadoModel {
 	}
 	public void setUsuario(UsuarioModel usuario) {
 		this.usuario = usuario;
+	}
+	public LocalDate getDataComunicado() {
+		return dataComunicado;
+	}
+	public void setDataComunicado(LocalDate dataComunicado) {
+		this.dataComunicado = dataComunicado;
 	}
 	
 	

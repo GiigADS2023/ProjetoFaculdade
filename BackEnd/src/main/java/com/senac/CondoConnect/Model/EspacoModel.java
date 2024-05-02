@@ -26,11 +26,11 @@ public class EspacoModel {
 		this.id = id;
 	}
 
-	public String getNomeSalao() {
+	public String getNomeEspaco() {
 		return nomeEspaco;
 	}
 
-	public void setNomeSalao(String nomeEspaco) {
+	public void setNomeEspaco(String nomeEspaco) {
 		this.nomeEspaco = nomeEspaco;
 	}
 
