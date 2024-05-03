@@ -1,86 +1,100 @@
 <template>
-  <nav class="sidebar close">
-    <header>
-        <div class="image-text">
-            <span class="image">
-                <img :src="logo" alt="Logo">
-            </span>
+    <div>
+        <template v-if="!isLoginRoute">
+            <nav class="sidebar close">
+                <header>
+                    <div class="image-text">
+                        <span class="image">
+                            <img :src="logo" alt="Logo">
+                        </span>
 
-            <div class="text logo-text">
-                <span class="name">CondoConnect</span>
-                <span class="profession">Condomínio Administrativo</span>
+                        <div class="text logo-text">
+                            <span class="name">CondoConnect</span>
+                            <span class="profession">Condomínio Administrativo</span>
+                        </div>
+                    </div>
+
+                    <i class='bx bx-chevron-right toggle'></i>
+                </header>
+
+                <div class="menu-bar">
+                    <div class="menu">
+
+                        <ul class="menu-links">
+                            <li class="nav-link">
+                                <router-link :to="{ name: 'Home' }">
+                                    <i class="bx bx-home-alt icon"></i>
+                                    <span class="text nav-text">Visão Geral</span>
+                                </router-link>
+                            </li>
+                            
+                            <li class="nav-link">
+                                <router-link :to="{ name: 'Reserve' }">
+                                    <i class="bx bx-calendar icon" ></i>
+                                    <span class="text nav-text">Reservas</span>
+                                </router-link>
+                            </li>
+
+                            <li class="nav-link">
+                                <router-link :to="{ name: 'Occurrence' }">
+                                    <i class="bx bx-bell icon" ></i>
+                                    <span class="text nav-text">Ocorrências</span>
+                                </router-link>
+                            </li>
+
+                            <li class="nav-link">
+                                <router-link :to="{ name: 'LostFound' }">
+                                    <i class="bx bx-like icon" ></i>
+                                    <span class="text nav-text">Achados e perdidos</span>
+                                </router-link>
+                            </li>
+
+                            <li class="nav-link">
+                                <router-link :to="{ name: 'Meeting' }">
+                                    <i class="bx bx-user-voice icon" ></i>
+                                    <span class="text nav-text">Reuniões</span>
+                                </router-link>
+                            </li>
+
+                        </ul>
+                    </div>
+
+                    <div class="bottom-content">
+                        <li>
+                            <router-link :to="{ name: 'LoginSignUp' }">
+                                <i class='bx bx-log-out icon' ></i>
+                                <span class="text nav-text">Sair</span>
+                            </router-link>
+                        </li>
+                    </div>
+                </div>
+            </nav>
+
+            <div>
+                <RouterView>
+                </RouterView>
             </div>
-        </div>
+        </template>
 
-        <i class='bx bx-chevron-right toggle'></i>
-    </header>
-
-    <div class="menu-bar">
-        <div class="menu">
-
-            <ul class="menu-links">
-                <li class="nav-link">
-                    <router-link :to="{ name: 'Home' }">
-                        <i class="bx bx-home-alt icon"></i>
-                        <span class="text nav-text">Visão Geral</span>
-                    </router-link>
-                </li>
-                
-                <li class="nav-link">
-                    <router-link :to="{ name: 'Reserve' }">
-                        <i class="bx bx-calendar icon" ></i>
-                        <span class="text nav-text">Reservas</span>
-                    </router-link>
-                </li>
-
-                <li class="nav-link">
-                    <router-link :to="{ name: 'Occurrence' }">
-                        <i class="bx bx-bell icon" ></i>
-                        <span class="text nav-text">Ocorrências</span>
-                    </router-link>
-                </li>
-
-                <li class="nav-link">
-                    <router-link :to="{ name: 'LostFound' }">
-                        <i class="bx bx-like icon" ></i>
-                        <span class="text nav-text">Achados e perdidos</span>
-                    </router-link>
-                </li>
-
-                <li class="nav-link">
-                    <router-link :to="{ name: 'Meeting' }">
-                        <i class="bx bx-user-voice icon" ></i>
-                        <span class="text nav-text">Reuniões</span>
-                    </router-link>
-                </li>
-
-            </ul>
-        </div>
-
-        <div class="bottom-content">
-            <li>
-                <a href="#">
-                    <i class='bx bx-log-out icon' ></i>
-                    <span class="text nav-text">Sair</span>
-                </a>
-            </li>
-        </div>
+        <template v-else>
+            <RouterView></RouterView>
+        </template>
     </div>
-</nav>
-
-<div>
-  <RouterView>
-  </RouterView>
-</div>
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
-import { RouterView } from 'vue-router';
+import { ref, onMounted, computed } from 'vue';
+import { RouterView, useRoute } from 'vue-router';
 import logo from '@/assets/logo.png';
 
 export default {
   setup() {
+    const route = useRoute();
+
+    const isLoginRoute = computed(() => {
+      return route.name === 'LoginSignUp';
+    });
+
     onMounted(() => {
       const sidebar = document.querySelector('.sidebar');
       const toggle = sidebar.querySelector(".toggle");
@@ -91,6 +105,7 @@ export default {
     });
 
     return {
+      isLoginRoute,
       logo
     };
   }

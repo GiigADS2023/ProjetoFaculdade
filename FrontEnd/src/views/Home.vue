@@ -1,14 +1,10 @@
 <script setup>
-  import { ref, computed, onMounted   } from 'vue'
+  import { ref, onMounted   } from 'vue'
   import axios from 'axios'
-  import ComponenteReservas from './../components/ComponentsReserve.vue'
-  import ComponenteOcorrencias from './../components/ComponentsOccurrence.vue'
-  import ComponenteReunioes from './../components/ComponentsMeeting.vue'
-  import ComponenteAchadosPeridos from './../components/ComponentsLostFound.vue'
   let reservas = ref([]);
   let ocorrencias = ref([]);
   let reunioes = ref([]);
-  let achadosperdidos = ref([]);
+  let achadosPerdidos = ref([]);
 
   onMounted(() => {
   // Obter reservas
@@ -49,15 +45,15 @@
   })
 
   const goToReserve = () => {
-    window.location.href = 'PageReserve.vue';
+    window.location.href = 'reserve';
   }
 
   const goToOccurrence = () => {
-    window.location.href = 'PageOccurrence.vue';
+    window.location.href = 'occurrence';
   }
 
   const goToMeeting = () => {
-    window.location.href = 'PageMeeting.vue';
+    window.location.href = 'meeting';
   }
 
   const panels = ref([

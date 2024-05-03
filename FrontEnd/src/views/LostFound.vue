@@ -1,75 +1,17 @@
-<script>
-export default {
-  name: "LostFound",
-  data() {
-    return {
-      title: null,
-      description: null,
-      modalVisible: false,
-      items: [], 
-      editIndex: null 
-    };
-  },
-  methods: {
-    openModal(edit = false, index = 0) {
-      this.modalVisible = true;
-      if (edit) {
-        this.editIndex = index;
-        this.title = this.items[index].title;
-        this.description = this.items[index].description;
-      } else {
-        this.editIndex = null;
-        this.title = null;
-        this.description = null;
-      }
-    },
-    closeModal() {
-      this.modalVisible = false;
-      this.title = null;
-      this.description = null;
-    },
-    saveObject() {
-      if (this.title && this.description) {
-        if (this.editIndex !== null) {
-          this.items[this.editIndex].title = this.title;
-          this.items[this.editIndex].description = this.description;
-        } else {
-          this.items.push({
-            title: this.title,
-            description: this.description
-          });
-        }
-        this.closeModal();
-      } else {
-        alert("Por favor, preencha todos os campos!");
-      }
-    },
-    editItem(index) {
-      this.openModal(true, index);
-    },
-    deleteItem(index) {
-      if (confirm("Tem certeza que deseja excluir este item?")) {
-        this.items.splice(index, 1);
-      }
-    }
-  }
-};
-
-</script>
 <template>
   <div class="title">
     <h4>Achados e Perdidos</h4>
-    <h6>Condomínio >> Achados e Perdidos >>  Alterar</h6>
+    <h6>Condomínio >> Achados e Perdidos >> Alterar</h6>
   </div>
 
   <div class="container">
     <div class="header">
-      <i class="bx bx-like icon" ><span>Achados e Perdidos</span></i>    
-      <button @click="openModal()" id="new">Criar Achados e Perdidos</button>
+      <i class="bx bx-like icon"><span>Achados e Perdidos</span></i>    
+      <button @click="openModal" id="new">Criar Achados e Perdidos</button>
     </div>
 
-    <div class="table">
-      <table>
+    <div class="divTable">
+      <table> 
         <thead>
           <tr>
             <th>Título</th>
@@ -78,39 +20,132 @@ export default {
             <th class="action">Excluir</th>
           </tr>
         </thead>
-          <tbody>
-            <tr v-for="(item, index) in items" :key="index">
-              <td>{{ item.title }}</td>
-              <td>{{ item.description }}</td>
-              <td class="action">
-                <button @click="editItem(index)" id="edit">Editar</button>
-              </td>
-              <td class="action">
-                <button @click="deleteItem(index)" id="delete">Excluir</button>
-              </td>
-            </tr>
-          </tbody>
+        <tbody>
+        </tbody>
       </table>
     </div>
 
-    <div class="modal-container" v-show="modalVisible">
+    <div class="modal-container">
       <div class="modal">
-        <form @submit.prevent="saveObject">
+        <form>
           <label for="m-title">Título</label>
-          <input id="m-title" type="text" v-model="title" required/>
-
+          <input id="m-title" type="text" required/>
           <label for="m-description">Descrição</label>
-          <input id="m-description" type="text" v-model="description" required/>
-
-          <button type="submit" id="btnSave">Salvar</button>
+          <input id="m-description" type="text" required/>
+          <button @click.prevent="saveItem">Salvar</button>
         </form>
-        <button @click="closeModal">Fechar</button>
       </div>
     </div>
   </div>
 </template>
 
-<style scoped>
+<script>
+export default {
+  methods: {
+    toggleDarkMode() {
+      this.isDarkMode = !this.isDarkMode;
+    },
+    openModal() {
+      const modal = document.querySelector('.modal-container');
+      const sTitle = document.querySelector('#m-title');
+      const sDescription = document.querySelector('#m-description');
+
+      modal.classList.add('active');
+
+      modal.onclick = e => {
+        if (e.target.className.indexOf('modal-container') !== -1) {
+          modal.classList.remove('active');
+          sTitle.value = '';
+          sDescription.value = '';
+        }
+      };
+    },
+    saveItem() {
+      const title = document.getElementById('m-title').value;
+      const description = document.getElementById('m-description').value;
+
+      if (title.trim() === '' || description.trim() === '') {
+        alert('Por favor, preencha todos os campos.');
+        return;
+      }
+
+      const newItem = {
+        title: title,
+        description: description
+      };
+
+      this.insertItem(newItem);
+    },
+    insertItem(item) {
+      let tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${item.title}</td>
+        <td>${item.description}</td>
+        <td class="action"><button @click="editItem(item)"><i class='bx bx-edit'></i></button></td>
+        <td class="action"><button @click="deleteItem(item)"><i class='bx bx-trash'></i></button></td>
+      `;
+
+      document.querySelector('tbody').appendChild(tr);
+    }
+  }
+}
+/*import axios from 'axios';
+
+export default {
+  methods: {
+    openModal() {
+      const modal = document.querySelector('.modal-container');
+      const sTitle = document.querySelector('#m-title');
+      const sDescription = document.querySelector('#m-description');
+
+      modal.classList.add('active');
+
+      modal.onclick = e => {
+        if (e.target.className.indexOf('modal-container') !== -1) {
+          modal.classList.remove('active');
+          sTitle.value = '';
+          sDescription.value = '';
+        }
+      };
+    },
+    saveItem() {
+      const title = document.getElementById('m-title').value;
+      const description = document.getElementById('m-description').value;
+
+      if (title.trim() === '' || description.trim() === '') {
+        alert('Por favor, preencha todos os campos.');
+        return;
+      }
+
+      const newItem = {
+        title: title,
+        description: description
+      };
+    
+      axios.post('http://localhost:8080/achados-perdidos/', newItem).then(response => {
+        console.log(response.data);
+        this.insertItem(newItem);
+      })
+      .catch(error => {
+        console.error('Erro ao enviar dados:', error);
+      });
+    },
+    insertItem(item) {
+      let tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${item.title}</td>
+        <td>${item.description}</td>
+        <td class="action"><button @click="editItem(item)"><i class='bx bx-edit'></i></button></td>
+        <td class="action"><button @click="deleteItem(item)"><i class='bx bx-trash'></i></button></td>
+      `;
+    
+      document.querySelector('tbody').appendChild(tr);
+    }
+  }
+}*/
+</script>
+
+<style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;700&family=Roboto:wght@100;300;400;500;700;900&family=Source+Sans+Pro:wght@200;300;400;600;700;900&display=swap');
 
 * {
@@ -121,19 +156,18 @@ export default {
 }
 
 .container {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;;
-  background-color: var(--body-color);
+  width: 80%;
+  height: 75%;
+  margin: 115px auto 0 180px; 
+  border: none;
+  background: white;
+  position: fixed;
 }
 
 .title {
   text-align: left;
-  margin-top: 25px;
   margin-bottom: 20px;
-  margin-left: 180px;
+  margin-left: 120px;
   position: fixed;
   top: 0;
   left: 0;
@@ -152,34 +186,6 @@ export default {
 
 button {
   cursor: pointer;
-}
-
-#edit {
-  font-size: 16px;
-  padding: 8px;
-  border-radius: 5px;
-  border: 1px solid #C4C4C4;
-  color: white;
-  background-color: #4070EC;
-}
-
-#delete {
-  font-size: 16px;
-  padding: 8px;
-  border-radius: 5px;
-  border: 1px solid red;
-  color: white;
-  background-color: red;
-}
-
-.container {
-  width: 80%;
-  height: 75%;
-  margin-top: 115px;
-  margin-left: 180px;
-  border: none;
-  background: white;
-    position: fixed;
 }
 
 .header {
@@ -210,19 +216,19 @@ button {
   background-color: #4070EC;
 }
 
-.table {
+.divTable {
   padding: 10px;
   width: auto;
   height: inherit;
   overflow: auto;
 }
 
-.table::-webkit-scrollbar {
+.divTable::-webkit-scrollbar {
   width: 12px;
   background-color: whitesmoke; 
 }
 
-.table::-webkit-scrollbar-thumb {
+.divTable::-webkit-scrollbar-thumb {
   border-radius: 10px;
   background-color: darkgray; 
 }
@@ -258,12 +264,12 @@ tbody tr {
   margin-bottom: 50px;
 }
 
-thead tr th.acao {
+thead tr th.action {
   width: 100px!important;
   text-align: center;
 }
 
-tbody tr td.acao {
+tbody tr td.action {
   text-align: center;
 }
 
@@ -281,7 +287,7 @@ tbody tr td.acao {
     font-size: 10px;
   }
 
-  thead tr th.acao {
+  thead tr th.action {
     width: auto!important;
   }
   
