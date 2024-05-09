@@ -1,12 +1,10 @@
-import { createApp } from 'vue';
 import { createRouter, createWebHistory } from 'vue-router';
-import App from './App.vue';
-import Home from './views/Home.vue';
+import Home from '@/views/Home.vue';
 import LoginSignUp from './views/LogInSignUp.vue'; 
-import Occurrence from './views/Occurrence.vue';
-import LostFound from './views/LostFound.vue';
-import Meeting from './views/Meeting.vue';
-import Reserve from './views/CalendarReserve.vue';
+import Occurrence from '@/views/Occurrence.vue';
+import LostFound from '@/views/LostFound.vue';
+import Meeting from '@/views/Meeting.vue';
+import Reserve from '@/views/Reserve.vue'; 
 
 const routes = [
   { path: '/login', name: 'LoginSignUp', component: LoginSignUp },
@@ -19,7 +17,7 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(),
-  routes,
+  routes
 });
 
-createApp(App).use(router).mount('#app');
+export default router;
