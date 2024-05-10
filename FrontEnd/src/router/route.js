@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from '@/views/Home.vue';
-import LoginSignUp from './views/LogInSignUp.vue'; 
+import LoginSignUp from '@/views/LogInSignUp.vue'; 
 import Occurrence from '@/views/Occurrence.vue';
 import LostFound from '@/views/LostFound.vue';
 import Meeting from '@/views/Meeting.vue';
-import Reserve from '@/views/Reserve.vue'; 
+import Reserve from '@/views/CalendarReserve.vue';
 
 const routes = [
   { path: '/login', name: 'LoginSignUp', component: LoginSignUp },
@@ -17,7 +17,7 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
 });
 
 export default router;

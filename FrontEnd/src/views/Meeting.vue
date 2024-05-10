@@ -23,22 +23,30 @@
           </tr>
         </thead>
         <tbody>
+          <tr v-for="(item, index) in items" :key="index">
+            <td>{{ item.titulo }}</td>
+            <td>{{ item.descricao }}</td>
+            <td>{{ item.data }}</td>
+            <td>{{ item.hora }}</td>
+            <td class="action"><button @click="saveItem"><i class='bx bx-edit'></i></button></td>
+            <td class="action"><button @click="deleteItem(item)"><i class='bx bx-trash'></i></button></td>
+          </tr>
         </tbody>
       </table>
     </div>
 
-    <div class="modal-container">
+    <div class="modal-container" ref="modalContainer">
       <div class="modal">
         <form>
           <label for="m-title">Título</label>
-          <input id="m-title" type="text" required/>
+          <input id="m-title" type="text" v-model="titulo" required/>
           <label for="m-description">Descrição</label>
-          <input id="m-description" type="text" required/>
+          <input id="m-description" type="text" v-model="descricao" required/>
           <label for="m-date">Data</label>
-          <input id="m-date" type="date" required/>
+          <input id="m-date" type="date" v-model="data" required/>
           <label for="m-hour">Hora</label>
-          <input id="m-hour" type="time" required/>
-          <button @click.prevent="saveItem">Salvar</button>
+          <input id="m-hour" type="time" v-model="hora" required/>
+          <button type="button" @click="saveItem">Salvar</button>
         </form>
       </div>
     </div>
@@ -47,67 +55,97 @@
 
 <script>
 import axios from 'axios';
+import { ref, reactive, onMounted } from 'vue';
 
 export default {
+  data() {
+    return {
+      items: [] // Adicione um array para armazenar os itens
+    };
+  },
   methods: {
     openModal() {
-      const modal = document.querySelector('.modal-container');
-      const sTitle = document.querySelector('#m-title');
-      const sDescription = document.querySelector('#m-description');
-      const sDate = document.querySelector('#m-date');
-      const sHour = document.querySelector('#m-hour');
-
-      modal.classList.add('active');
-
-      modal.onclick = e => {
-        if (e.target.className.indexOf('modal-container') !== -1) {
-          modal.classList.remove('active');
-          sTitle.value = '';
-          sDescription.value = '';
-          sDate.value = '';
-          sHour.value = '';
-        }
-      };
+      this.$refs.modalContainer.classList.add('active');
     },
     saveItem() {
-      const title = document.getElementById('m-title').value;
-      const description = document.getElementById('m-description').value;
-      const date = document.getElementById('m-date').value;
-      const hour = document.getElementById('m-hour').value;
-
-      if (title.trim() === '' || description.trim() === '' || date.trim() === '' || hour.trim() === '') {
+      if (!this.titulo || !this.descricao || !this.data || !this.hora) {
         alert('Por favor, preencha todos os campos.');
         return;
       }
 
-      const newItem = {
-        title: title,
-        description: description,
-        date: date,
-        hour: hour
+      const itemData = {
+        titulo: this.titulo,
+        descricao: this.descricao,
+        data: this.data,
+        hora: this.hora
       };
-    
-      axios.post('http://localhost:8080/reunioes/', newItem).then(response => {
-        console.log(response.data);
-        this.insertItem(newItem);
-      })
-      .catch(error => {
-        console.error('Erro ao enviar dados:', error);
-      });
+
+      const endpoint = this.itemID ? `http://localhost:8080/putassembleia/1/${this.itemID}` : 'http://localhost:8080/newassembleia/1';
+      const requestMethod = this.itemID ? 'put' : 'post';
+
+      axios[requestMethod](endpoint, itemData)
+        .then(response => {
+          console.log(response.data);
+          // Atualiza os itens
+          this.fetchItems();
+          // Fecha o modal
+          this.$refs.modalContainer.classList.remove('active');
+        })
+        .catch(error => {
+          console.error('Erro ao salvar item:', error);
+        });
+    },
+    deleteItem(item) {
+      const confirmaExclusao = confirm("Tem certeza de que deseja excluir este item?");
+      
+      if (!confirmaExclusao) {
+        return; // Cancela a exclusão caso seja clicado em "Cancelar"
+      }
+      
+      axios.delete(`http://localhost:8080/deleteassembleia/1/${item.id}`)
+        .then(response => {
+          // Remover item da lista de itens que estão sendo exibidos
+          this.items = this.items.filter(i => i !== item);
+        })
+        .catch(error => {
+          console.error('Erro ao excluir item: ', error);
+        });
     },
     insertItem(item) {
-      let tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${item.title}</td>
-        <td>${item.description}</td>
-        <td>${item.date}</td>
-        <td>${item.hour}</td>
-        <td class="action"><button @click="editItem(item)"><i class='bx bx-edit'></i></button></td>
-        <td class="action"><button @click="deleteItem(item)"><i class='bx bx-trash'></i></button></td>
-      `;
-    
-      document.querySelector('tbody').appendChild(tr);
+      this.items.push(item);  // Adicione o novo item ao array de itens
+    },
+    fetchItems() {
+      axios.get('http://localhost:8080/newassembleia/1')
+        .then(response => {
+          this.items = response.data; // Atualize o array de itens com os dados obtidos
+        })
+        .catch(error => {
+          console.error('Erro ao buscar dados:', error);
+        });
     }
+  },
+  setup() {
+    const titulo = ref('');
+    const descricao = ref('');
+    const data = ref('');
+    const hora = ref('');
+    
+    //Usado para reatividade em items
+    const state = reactive({
+      items: []
+    });
+
+    onMounted(() => {
+      this.fetchItems(); // Ao montar o componente, buscar os itens existentes
+    });
+
+    return {
+      titulo,
+      descricao,
+      data,
+      hora,
+      items: state.items // Retornar items do estado reativo
+    };
   }
 }
 </script>
