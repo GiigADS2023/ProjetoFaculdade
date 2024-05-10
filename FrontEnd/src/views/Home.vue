@@ -58,14 +58,19 @@
 
   const panels = ref([
     { 
-      icon: 'bx bx-calendar icon',
-      title: 'Reservas',
-      items:  [] // Substitui por = reservas
+      icon: 'bx bx-user-voice icon',
+      title: 'Reuniões',
+      items: [] // Substitui por = reunioes 
     },
     { 
       icon: 'bx bx-bell icon',
       title: 'Ocorrências',
       items: [] // Substitui por = reservas ocorrencias
+    },
+    { 
+      icon: 'bx bx-calendar icon',
+      title: 'Reservas',
+      items:  [] // Substitui por = reservas
     },
     { 
       icon: 'bx bx-like icon',
