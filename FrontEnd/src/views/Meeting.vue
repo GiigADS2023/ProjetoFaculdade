@@ -30,6 +30,7 @@
             <td>{{ item.time }}</td>
             <td class="action"><button @click="editItem(item)"><i class='bx bx-edit'></i></button></td>
             <td class="action"><button @click="deleteItem(item.id)"><i class='bx bx-trash'></i></button></td>
+
           </tr>
         </tbody>
       </table>
@@ -46,6 +47,7 @@
           <input id="m-date" type="date" v-model="data" required />
           <label for="m-hour">Hora</label>
           <input id="m-hour" type="time" v-model="hora" required />
+          
           <button type="button" @click="saveItem">Salvar</button>
         </form>
       </div>
@@ -59,26 +61,31 @@ import axios from 'axios';
 export default {
   data() {
     return {
+
       itemID: null,
       titulo: '',
       descricao: '',
       data: '',
       hora: '',
       items: []
+
     };
   },
   methods: {
     openModal() {
+
       const modal = document.querySelector('.modal-container');
       modal.classList.add('active');
     },
     async saveItem() {
+
       if (!this.titulo || !this.descricao || !this.data || !this.hora) {
         alert('Por favor, preencha todos os campos.');
         return;
       }
 
       const itemData = {
+
         title: this.titulo,
         description: this.descricao,
         date: this.data,
@@ -121,6 +128,7 @@ export default {
         console.error('Erro ao excluir item: ', error);
       }
     }
+
   }
 }
 </script>
@@ -138,6 +146,7 @@ export default {
 .container {
   width: 80%;
   height: 75%;
+
   margin: 115px auto 0 180px;
   border: none;
   background: white;
@@ -151,6 +160,7 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
+
   width: 100%;
 }
 
@@ -186,6 +196,7 @@ button {
   font-size: 16px;
   padding: 8px;
   border-radius: 5px;
+
   border: 1px solid #C4C4C4;
   color: #4070EC;
   background-color: white;
@@ -257,7 +268,6 @@ tbody tr td.action {
   .container {
     font-size: 10px;
   }
-
   .header span {
     font-size: 15px;
   }
@@ -352,7 +362,6 @@ tbody tr td.action {
     opacity: 0;
     transform: translate3d(0, -60px, 0);
   }
-
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0);

@@ -1,75 +1,17 @@
-<script>
-export default {
-  name: "LostFound",
-  data() {
-    return {
-      title: null,
-      description: null,
-      modalVisible: false,
-      items: [], 
-      editIndex: null 
-    };
-  },
-  methods: {
-    openModal(edit = false, index = 0) {
-      this.modalVisible = true;
-      if (edit) {
-        this.editIndex = index;
-        this.title = this.items[index].title;
-        this.description = this.items[index].description;
-      } else {
-        this.editIndex = null;
-        this.title = null;
-        this.description = null;
-      }
-    },
-    closeModal() {
-      this.modalVisible = false;
-      this.title = null;
-      this.description = null;
-    },
-    saveObject() {
-      if (this.title && this.description) {
-        if (this.editIndex !== null) {
-          this.items[this.editIndex].title = this.title;
-          this.items[this.editIndex].description = this.description;
-        } else {
-          this.items.push({
-            title: this.title,
-            description: this.description
-          });
-        }
-        this.closeModal();
-      } else {
-        alert("Por favor, preencha todos os campos!");
-      }
-    },
-    editItem(index) {
-      this.openModal(true, index);
-    },
-    deleteItem(index) {
-      if (confirm("Tem certeza que deseja excluir este item?")) {
-        this.items.splice(index, 1);
-      }
-    }
-  }
-};
-
-</script>
 <template>
   <div class="title">
     <h4>Achados e Perdidos</h4>
-    <h6>Condomínio >> Achados e Perdidos >>  Alterar</h6>
+    <h6>Condomínio >> Achados e Perdidos >> Alterar</h6>
   </div>
 
   <div class="container">
     <div class="header">
-      <i class="bx bx-like icon" ><span>Achados e Perdidos</span></i>    
-      <button @click="openModal()" id="new">Criar Achados e Perdidos</button>
+      <i class="bx bx-like icon"><span>Achados e Perdidos</span></i>    
+      <button @click="openModal" id="new">Criar Achados e Perdidos</button>
     </div>
 
     <div class="table">
-      <table>
+      <table> 
         <thead>
           <tr>
             <th>Título</th>
@@ -78,39 +20,123 @@ export default {
             <th class="action">Excluir</th>
           </tr>
         </thead>
-          <tbody>
-            <tr v-for="(item, index) in items" :key="index">
-              <td>{{ item.title }}</td>
-              <td>{{ item.description }}</td>
-              <td class="action">
-                <button @click="editItem(index)" id="edit">Editar</button>
-              </td>
-              <td class="action">
-                <button @click="deleteItem(index)" id="delete">Excluir</button>
-              </td>
-            </tr>
-          </tbody>
+        <tbody>
+          <tr v-for="(item, index) in items" :key="index">
+            <td>{{ item.titulo }}</td>
+            <td>{{ item.descricao }}</td>
+            <td class="action"><button @click="saveItem"><i class='bx bx-edit'></i></button></td>
+            <td class="action"><button @click="deleteItem(item)"><i class='bx bx-trash'></i></button></td>
+          </tr>
+        </tbody>
       </table>
     </div>
 
-    <div class="modal-container" v-show="modalVisible">
+    <div class="modal-container" ref="modalContainer">
       <div class="modal">
-        <form @submit.prevent="saveObject">
+        <form>
           <label for="m-title">Título</label>
-          <input id="m-title" type="text" v-model="title" required/>
-
+          <input id="m-title" type="text" v-model="titulo" required/>
           <label for="m-description">Descrição</label>
-          <input id="m-description" type="text" v-model="description" required/>
-
-          <button type="submit" id="btnSave">Salvar</button>
+          <input id="m-description" type="text" v-model="descricao" required/>
+          <button type="button" @click="saveItem">Salvar</button>
         </form>
-        <button @click="closeModal">Fechar</button>
       </div>
     </div>
   </div>
 </template>
 
-<style scoped>
+<script>
+import axios from 'axios';
+import { ref, reactive, onMounted } from 'vue';
+
+export default {
+  data() {
+    return {
+      items: [] // Adicione um array para armazenar os itens
+    };
+  },
+  methods: {
+    openModal() {
+      this.$refs.modalContainer.classList.add('active');
+    },
+    saveItem() {
+      if (!this.titulo || !this.descricao) {
+        alert('Por favor, preencha todos os campos.');
+        return;
+      }
+
+      const itemData = {
+        titulo: this.titulo,
+        descricao: this.descricao
+      };
+
+      const endpoint = this.itemID ? `http://localhost:8080/putachadoperdido/1/${this.itemID}` : 'http://localhost:8080/newachadoperdido/1';
+      const requestMethod = this.itemID ? 'put' : 'post';
+
+      axios[requestMethod](endpoint, itemData)
+        .then(response => {
+          console.log(response.data);
+          // Atualiza os itens
+          this.fetchItems();
+          // Fecha o modal
+          this.$refs.modalContainer.classList.remove('active');
+        })
+        .catch(error => {
+          console.error('Erro ao salvar item:', error);
+        });
+    },
+    deleteItem(item) {
+      const confirmaExclusao = confirm("Tem certeza de que deseja excluir este item?");
+      
+      if (!confirmaExclusao) {
+        return; // Cancela a exclusão caso seja clicado em "Cancelar"
+      }
+      
+      axios.delete(`http://localhost:8080/deleteachadoperdido/1/${item.id}`)
+        .then(response => {
+          // Remover item da lista de itens que estão sendo exibidos
+          this.items = this.items.filter(i => i !== item);
+        })
+        .catch(error => {
+          console.error('Erro ao excluir item: ', error);
+        });
+    },
+    insertItem(item) {
+      this.items.push(item);  // Adicione o novo item ao array de itens
+    },
+    fetchItems() {
+      axios.get('http://localhost:8080/newassembleia/1')
+        .then(response => {
+          this.items = response.data; // Atualize o array de itens com os dados obtidos
+        })
+        .catch(error => {
+          console.error('Erro ao buscar dados:', error);
+        });
+    }
+  },
+  setup() {
+    const titulo = ref('');
+    const descricao = ref('');
+    
+    //Usado para reatividade em items
+    const state = reactive({
+      items: []
+    });
+
+    onMounted(() => {
+      this.fetchItems(); // Ao montar o componente, buscar os itens existentes
+    });
+
+    return {
+      titulo,
+      descricao,
+      items: state.items // Retornar items do estado reativo
+    };
+  }
+}
+</script>
+
+<style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;700&family=Roboto:wght@100;300;400;500;700;900&family=Source+Sans+Pro:wght@200;300;400;600;700;900&display=swap');
 
 * {
@@ -120,18 +146,17 @@ export default {
   font-family: 'Poppins', sans-serif;
 }
 
-template{
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;;
-  background-color: var(--body-color);
+.container {
+  width: 80%;
+  height: 75%;
+  margin: 115px auto 0 180px; 
+  border: none;
+  background: white;
+  position: fixed;
 }
 
 .title {
   text-align: left;
-  margin-top: 25px;
   margin-bottom: 20px;
   margin-left: 120px;
   position: fixed;
@@ -154,34 +179,6 @@ button {
   cursor: pointer;
 }
 
-#edit {
-  font-size: 16px;
-  padding: 8px;
-  border-radius: 5px;
-  border: 1px solid #C4C4C4;
-  color: white;
-  background-color: #4070EC;
-}
-
-#delete {
-  font-size: 16px;
-  padding: 8px;
-  border-radius: 5px;
-  border: 1px solid red;
-  color: white;
-  background-color: red;
-}
-
-.container {
-  width: 80%;
-  height: 75%;
-  margin-top: 115px;
-  margin-left: 50px;
-  border: none;
-  background: white;
-    position: fixed;
-}
-
 .header {
   min-height: 70px;
   display: flex;
@@ -200,7 +197,7 @@ button {
   font-size: 16px;
   padding: 8px;
   border-radius: 5px;
-  border: 1px solid #C4C4C4; /* Adicione uma borda sólida */
+  border: 1px solid #C4C4C4; 
   color: #4070EC;
   background-color: white;
 }
@@ -258,17 +255,17 @@ tbody tr {
   margin-bottom: 50px;
 }
 
-thead tr th.acao {
+thead tr th.action {
   width: 100px!important;
   text-align: center;
 }
 
-tbody tr td.acao {
+tbody tr td.action {
   text-align: center;
 }
 
 @media (max-width: 700px) {
-  template {
+  .container {
     font-size: 10px;
   }
   
@@ -281,7 +278,7 @@ tbody tr td.acao {
     font-size: 10px;
   }
 
-  thead tr th.acao {
+  thead tr th.action {
     width: auto!important;
   }
   
