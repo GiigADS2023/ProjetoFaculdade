@@ -6,7 +6,7 @@
 
   <div class="container">
     <div class="header">
-      <i class="bx bx-user-voice icon"><span>Reuniões</span></i>
+      <i class="bx bx-user-voice icon" ><span>Reuniões</span></i>    
       <button @click="openModal" id="new">Criar Reunião</button>
     </div>
 
@@ -24,30 +24,28 @@
         </thead>
         <tbody>
           <tr v-for="(item, index) in items" :key="index">
-            <td>{{ item.title }}</td>
-            <td>{{ item.description }}</td>
-            <td>{{ item.date }}</td>
-            <td>{{ item.time }}</td>
-            <td class="action"><button @click="editItem(item)"><i class='bx bx-edit'></i></button></td>
-            <td class="action"><button @click="deleteItem(item.id)"><i class='bx bx-trash'></i></button></td>
-
+            <td>{{ item.titulo }}</td>
+            <td>{{ item.descricao }}</td>
+            <td>{{ item.data }}</td>
+            <td>{{ item.hora }}</td>
+            <td class="action"><button @click="saveItem"><i class='bx bx-edit'></i></button></td>
+            <td class="action"><button @click="deleteItem(item)"><i class='bx bx-trash'></i></button></td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <div class="modal-container">
+    <div class="modal-container" ref="modalContainer">
       <div class="modal">
         <form>
           <label for="m-title">Título</label>
-          <input id="m-title" type="text" v-model="titulo" required />
+          <input id="m-title" type="text" v-model="titulo" required/>
           <label for="m-description">Descrição</label>
-          <input id="m-description" type="text" v-model="descricao" required />
+          <input id="m-description" type="text" v-model="descricao" required/>
           <label for="m-date">Data</label>
-          <input id="m-date" type="date" v-model="data" required />
+          <input id="m-date" type="date" v-model="data" required/>
           <label for="m-hour">Hora</label>
-          <input id="m-hour" type="time" v-model="hora" required />
-          
+          <input id="m-hour" type="time" v-model="hora" required/>
           <button type="button" @click="saveItem">Salvar</button>
         </form>
       </div>
@@ -57,78 +55,108 @@
 
 <script>
 import axios from 'axios';
+import { ref, reactive, onMounted } from 'vue';
 
 export default {
   data() {
     return {
-
-      itemID: null,
-      titulo: '',
-      descricao: '',
-      data: '',
-      hora: '',
-      items: []
-
+      items: [] // Adicione um array para armazenar os itens
     };
   },
   methods: {
     openModal() {
-
-      const modal = document.querySelector('.modal-container');
-      modal.classList.add('active');
+      this.$refs.modalContainer.classList.add('active');
     },
-    async saveItem() {
-
+    saveItem() {
       if (!this.titulo || !this.descricao || !this.data || !this.hora) {
         alert('Por favor, preencha todos os campos.');
         return;
       }
 
       const itemData = {
-
-        title: this.titulo,
-        description: this.descricao,
-        date: this.data,
-        time: this.hora
+        titulo: this.titulo,
+        descricao: this.descricao,
+        data: this.data,
+        // hora: this.hora
       };
 
-      try {
-        if (this.itemID) {
-          //Se o itemID for existente, é porque está sendo editado, sendo assim, usando "PUT"
-          await axios.put(`http://localhost:8080/newassembleia/1/${this.itemID}`, itemData);
-        } else {
-          //Caso ao contrário usamos "POST"
-          await axios.post('http://localhost:8080/newassembleia/1', itemData);
-        }
-        //Atualiza
-        this.getItems();
-        //Fecha o modal
-        this.$refs.modalContainer.classList.remove('active');
-      } catch (error) {
-        console.error('Erro ao salvar item:', error);
-      }
+      const endpoint = this.itemID ? `http://localhost:8080/putassembleia/${this.itemID}` : 'http://localhost:8080/newassembleia/1';
+      const requestMethod = this.itemID ? 'put' : 'post';
 
+      axios[requestMethod](endpoint, itemData)
+        .then(response => {
+          console.log(response.data);
+          // Adiciona o novo item à lista de itens
+          this.items.push(response.data);
+          // Fecha o modal
+          this.$refs.modalContainer.classList.remove('active');
+        })
+        .catch(error => {
+          console.error('Erro ao salvar item:', error);
+        });
+    },
+    deleteItem(item) {
+      const confirmaExclusao = confirm("Tem certeza de que deseja excluir este item?");
+      
+      if (!confirmaExclusao) {
+        return; // Cancela a exclusão caso seja clicado em "Cancelar"
+      }
+      
+      axios.delete(`http://localhost:8080/deleteassembleia/${item.id}`)
+      .then(() => {
+        // Remover item da lista de itens que estão sendo exibidos
+        this.items = this.items.filter(i => i !== item);
+        console.log('Item excluído com sucesso:', item);
+      })
+      .catch(error => {
+        console.error('Erro ao excluir item: ', error);
+        // Tratar o erro aqui, se necessário
+      });
     },
     insertItem(item) {
-      this.items.push(item);
+      this.items.push(item);  // Adicione o novo item ao array de itens
     },
-    async deleteItem(itemID) {
-      const confirmaExclusao = confirm("Tem certeza de que deseja excluir este item?");
-
-      if (!confirmaExclusao) {
-        return; //Cancela a exclusão caso for clicado em "cancelar"
-      }
-
-      try {
-        await axios.delete(`http://localhost:8080/newassembleia/1/${itemID}`);
-
-        //Remover item na lista de itens que estão exibidos
-        this.items = this.items.filter(item => item.id !== itemID);
-      } catch (error) {
-        console.error('Erro ao excluir item: ', error);
-      }
+    fetchItems() {
+      axios.get('http://localhost:8080/assembleia/1')
+        .then(response => {
+          this.items = response.data;
+        })
+        .catch(error => {
+          console.error('Erro ao buscar dados:', error);
+        });
     }
+  },
+  setup() {
+    const titulo = ref('');
+    const descricao = ref('');
+    const data = ref('');
+    const hora = ref('');
 
+    const state = reactive({
+      items: []
+    });
+
+    onMounted(() => {
+      fetchItems(); 
+    });
+
+    function fetchItems() {
+      axios.get('http://localhost:8080/assembleia/1')
+        .then(response => {
+          state.items = response.data;
+        })
+        .catch(error => {
+          console.error('Erro ao buscar dados:', error);
+        });
+    }
+    
+    return {
+      titulo,
+      descricao,
+      data,
+      hora,
+      items: state.items
+    };
   }
 }
 </script>
@@ -146,8 +174,7 @@ export default {
 .container {
   width: 80%;
   height: 75%;
-
-  margin: 115px auto 0 180px;
+  margin: 115px auto 0 180px; 
   border: none;
   background: white;
   position: fixed;
@@ -160,8 +187,7 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-
-  width: 100%;
+  width: 100%; 
 }
 
 .title h4 {
@@ -196,8 +222,7 @@ button {
   font-size: 16px;
   padding: 8px;
   border-radius: 5px;
-
-  border: 1px solid #C4C4C4;
+  border: 1px solid #C4C4C4; 
   color: #4070EC;
   background-color: white;
 }
@@ -216,12 +241,12 @@ button {
 
 .table::-webkit-scrollbar {
   width: 12px;
-  background-color: whitesmoke;
+  background-color: whitesmoke; 
 }
 
 .table::-webkit-scrollbar-thumb {
   border-radius: 10px;
-  background-color: darkgray;
+  background-color: darkgray; 
 }
 
 table {
@@ -236,7 +261,7 @@ thead {
 }
 
 tr {
-  border-bottom: 1px solid rgb(238, 235, 235) !important;
+  border-bottom: 1px solid rgb(238, 235, 235)!important;
 }
 
 tbody tr td {
@@ -256,7 +281,7 @@ tbody tr {
 }
 
 thead tr th.action {
-  width: 100px !important;
+  width: 100px!important;
   text-align: center;
 }
 
@@ -268,6 +293,7 @@ tbody tr td.action {
   .container {
     font-size: 10px;
   }
+  
   .header span {
     font-size: 15px;
   }
@@ -278,11 +304,11 @@ tbody tr td.action {
   }
 
   thead tr th.action {
-    width: auto !important;
+    width: auto!important;
   }
-
+  
   td button i {
-    font-size: 20px !important;
+    font-size: 20px!important;
   }
 
   td button i:first-child {
@@ -290,11 +316,11 @@ tbody tr td.action {
   }
 
   .modal {
-    width: 90% !important;
+    width: 90%!important;
   }
 
   .modal label {
-    font-size: 12px !important;
+    font-size: 12px!important;
   }
 }
 
@@ -329,7 +355,7 @@ tbody tr td.action {
 .modal input {
   width: 100%;
   outline: none;
-  padding: 5px 10px;
+  padding: 5px 10px; 
   width: 100%;
   margin-bottom: 20px;
   border-top: none;
@@ -341,8 +367,8 @@ tbody tr td.action {
   width: 100%;
   margin: 10px auto;
   outline: none;
-  border-radius: 20px;
-  padding: 5px 10px;
+  border-radius: 20px; 
+  padding: 5px 10px; 
   width: 100%;
   border: none;
   background-color: rgb(57, 57, 226);
