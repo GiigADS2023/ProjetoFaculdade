@@ -17,7 +17,7 @@ public class AssembleiaService {
 	    public List<AssembleiaModel> findAll(){ // vai retornar uma lista de Posts
 	        return assembleiaRepository.findAll();
 	    }
-	    public Optional<AssembleiaModel> findById(UUID id){ // vai retornar um unico   // Post passando o id
+	    public Optional<AssembleiaModel> findById(int id){ // vai retornar um unico   // Post passando o id
 	        return assembleiaRepository.findById(id);
 	    }
 	    public AssembleiaModel save(AssembleiaModel post){ // vai salvar um Post no Banco
@@ -28,5 +28,8 @@ public class AssembleiaService {
 	    }
 	    public List<AssembleiaModel> getListAssembleia(){
 	    	return assembleiaRepository.getListAssembleia();
+	    }
+	    public List<AssembleiaModel> getAssembleiaUser(int id){
+	    	return assembleiaRepository.getAssembleiaUser(id);
 	    }
 }

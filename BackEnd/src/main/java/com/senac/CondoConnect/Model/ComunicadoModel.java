@@ -1,8 +1,8 @@
 package com.senac.CondoConnect.Model;
 
+import java.sql.Time;
 import java.time.LocalDate;
 import java.util.Date;
-import java.util.UUID;
 
 import jakarta.persistence.*;
 
@@ -12,7 +12,7 @@ public class ComunicadoModel {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private UUID id;
+	private int id;
 	@Column(nullable= false)
 	private String tituloComunicado;
 	@Column(nullable= false)
@@ -24,10 +24,10 @@ public class ComunicadoModel {
 	@ManyToOne
 	private UsuarioModel usuario;
 	
-	public UUID getId() {
+	public int getId() {
 		return id;
 	}
-	public void setId(UUID id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 	public String gettituloComunicado() {
