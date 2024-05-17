@@ -1,7 +1,10 @@
 package com.senac.CondoConnect.dtos;
 
-import java.time.LocalDate;
+import java.sql.Date;
+import java.sql.Time;
 
-public record AssembleiaRecord(String titulo, String descricao, LocalDate data, UsuarioRecord usuario) {
+import com.senac.CondoConnect.Model.UsuarioModel;
+
+public record AssembleiaRecord(String titulo, String descricao, Date data, UsuarioModel usuario, Time hora) {
 
 }

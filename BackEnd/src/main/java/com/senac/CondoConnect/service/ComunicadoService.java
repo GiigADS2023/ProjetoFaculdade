@@ -17,7 +17,7 @@ public class ComunicadoService {
 	    public List<ComunicadoModel> findAll(){ // vai retornar uma lista de Posts
 	        return comunicadoRepository.findAll();
 	    }
-	    public Optional<ComunicadoModel> findById(UUID id){ // vai retornar um unico   // Post passando o id
+	    public Optional<ComunicadoModel> findById(int id){ // vai retornar um unico   // Post passando o id
 	        return comunicadoRepository.findById(id);
 	    }
 	    public ComunicadoModel save(ComunicadoModel post){ // vai salvar um Post no Banco
@@ -28,5 +28,14 @@ public class ComunicadoService {
 	    }
 	    public List<ComunicadoModel> getListComunicado(){
 	    	return comunicadoRepository.getListComunicado();
+	    }
+	    public List<ComunicadoModel> getListAchado(){
+	    	return comunicadoRepository.getListAchado();
+	    }
+	    public List<ComunicadoModel> finComunicadoByUser(int id){
+	    	return comunicadoRepository.findComunicadoByUser(id);
+	    }
+	    public List<ComunicadoModel> finAchadoByUser(int id){
+	    	return comunicadoRepository.findAchadoByUser(id);
 	    }
 }

@@ -2,12 +2,12 @@ package com.senac.CondoConnect.controller;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +23,7 @@ import com.senac.CondoConnect.service.EspacoService;
 import jakarta.validation.Valid;
 
 @RestController
+@CrossOrigin(origins  = "http://localhost:5173/meeting")
 public class EspacoController {
 
 	@Autowired
@@ -48,7 +49,7 @@ public class EspacoController {
 	}
 	
 	@GetMapping(value ="/espaco/{id}")
-	public ResponseEntity<Object> getEspacoDetails(@PathVariable("id") UUID id) {
+	public ResponseEntity<Object> getEspacoDetails(@PathVariable("id") int id) {
 		Optional<EspacoModel> espaco = espacoservice.findById(id);
 		
 		if(!espaco.isPresent()) {
@@ -58,7 +59,7 @@ public class EspacoController {
 	}
 	
 	@DeleteMapping(value = "/deleteespaco/{id}")
-	public ResponseEntity<Object> deleteEspaco(@PathVariable("id") UUID id ){
+	public ResponseEntity<Object> deleteEspaco(@PathVariable("id") int id ){
 		Optional<EspacoModel> blogappModelOptional = espacoservice.findById(id);
 		
 		if(!blogappModelOptional.isPresent()) {
@@ -69,7 +70,7 @@ public class EspacoController {
 	}
 	
 	@PutMapping(value ="/putespaco/{id}")
-	public ResponseEntity<Object> putEspaco(@RequestBody @Valid EspacoRecord espacodto,@PathVariable("id") UUID id){
+	public ResponseEntity<Object> putEspaco(@RequestBody @Valid EspacoRecord espacodto,@PathVariable("id") int id){
 		Optional<EspacoModel> blogappModelOptional = espacoservice.findById(id);
 
 		if(!blogappModelOptional.isPresent()) {

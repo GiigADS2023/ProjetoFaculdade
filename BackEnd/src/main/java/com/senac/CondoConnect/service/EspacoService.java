@@ -17,7 +17,7 @@ public class EspacoService {
 	    public List<EspacoModel> findAll(){ // vai retornar uma lista de Posts
 	        return espacoRepository.findAll();
 	    }
-	    public Optional<EspacoModel> findById(UUID id){ // vai retornar um unico   // Post passando o id
+	    public Optional<EspacoModel> findById(int id){ // vai retornar um unico   // Post passando o id
 	        return espacoRepository.findById(id);
 	    }
 	    public EspacoModel save(EspacoModel post){ // vai salvar um Post no Banco
