@@ -1,71 +1,99 @@
 <template>
-  <div class="title">
-    <h4>Reuniões</h4>
-    <h6>Condomínio >> Reunião >> Alterar</h6>
-  </div>
-
-  <div class="container">
-    <div class="header">
-      <i class="bx bx-user-voice icon" ><span>Reuniões</span></i>    
-      <button @click="openModal" id="new">Criar Reunião</button>
-    </div>
-
-    <div class="table">
-      <table>
-        <thead>
-          <tr>
-            <th>Título</th>
-            <th>Descrição</th>
-            <th>Data</th>
-            <th>Hora</th>
-            <th class="action">Editar</th>
-            <th class="action">Excluir</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, index) in items" :key="index">
-            <td>{{ item.titulo }}</td>
-            <td>{{ item.descricao }}</td>
-            <td>{{ item.data }}</td>
-            <td>{{ item.hora }}</td>
-            <td class="action"><button @click="saveItem"><i class='bx bx-edit'></i></button></td>
-            <td class="action"><button @click="deleteItem(item)"><i class='bx bx-trash'></i></button></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="modal-container" ref="modalContainer">
-      <div class="modal">
-        <form>
-          <label for="m-title">Título</label>
-          <input id="m-title" type="text" v-model="titulo" required/>
-          <label for="m-description">Descrição</label>
-          <input id="m-description" type="text" v-model="descricao" required/>
-          <label for="m-date">Data</label>
-          <input id="m-date" type="date" v-model="data" required/>
-          <label for="m-hour">Hora</label>
-          <input id="m-hour" type="time" v-model="hora" required/>
-          <button type="button" @click="saveItem">Salvar</button>
-        </form>
+  <div>
+      <div class="title">
+        <h4>Reuniões</h4>
+        <h6>Condomínio >> Reunião >> Alterar</h6>
+      </div>
+ 
+    <div class="container">
+      <div class="header">
+        <i class="bx bx-user-voice icon"><span>Reuniões</span></i>
+        <button @click="openModal(null)" id="new">Criar Reunião</button>
+      </div>
+ 
+      <div class="table">
+        <table>
+          <thead>
+            <tr>
+              <th>Título</th>
+              <th>Descrição</th>
+              <th>Data</th>
+              <th>Hora</th>
+              <th class="action">Editar</th>
+              <th class="action">Excluir</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(meeting, index) in meetings" :key="index">
+              <td>{{ meeting ? meeting.titulo : '' }}</td>
+              <td>{{ meeting ? meeting.descricao : '' }}</td>
+              <td>{{ meeting ? meeting.data : '' }}</td>
+              <td>{{ meeting ? meeting.hora : '' }}</td>
+              <td class="action"><button @click="openModal(meeting)"><i class='bx bx-edit'></i></button></td>
+              <td class="action"><button @click="deleteItem(meeting.id)"><i class='bx bx-trash'></i></button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+ 
+      <div class="modal-container">
+        <div class="modal">
+          <form>
+            <label for="m-title">Título</label>
+            <input id="m-title" v-model="titulo" type="text" required/>
+            <label for="m-description">Descrição</label>
+            <input id="m-description" v-model="descricao" type="text" required/>
+            <label for="m-date">Data</label>
+            <input id="m-date" v-model="data" type="date" required/>
+            <label for="m-hour">Hora</label>
+            <input id="m-hour" v-model="hora" type="time" required/>
+            <button @click.prevent="saveItem">{{ isEditing ? 'Atualizar' : 'Salvar' }}</button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
 </template>
-
+ 
 <script>
 import axios from 'axios';
-import { ref, reactive, onMounted } from 'vue';
-
+ 
 export default {
   data() {
     return {
-      items: [] // Adicione um array para armazenar os itens
+      meetings: [],
+      titulo: '',
+      descricao: '',
+      data: '',
+      hora: '',
+      isEditing: false,
+      editId: null
     };
   },
   methods: {
-    openModal() {
-      this.$refs.modalContainer.classList.add('active');
+    openModal(meeting) {
+      if (meeting) {
+        this.isEditing = true;
+        this.titulo = meeting.titulo;
+        this.descricao = meeting.descricao;
+        this.data = meeting.data;
+        this.hora = meeting.hora.includes(':00') ? meeting.hora.slice(0, -3) : meeting.hora; 
+        this.editId = meeting.id;
+      } else {
+        this.isEditing = false;
+        this.editId = null;
+        this.resetForm();
+      }
+      const modal = document.querySelector('.modal-container');
+      modal.classList.add('active');
+      modal.addEventListener('click', this.closeModalOutside);
+    },
+    closeModalOutside(event) {
+      const modal = document.querySelector('.modal-container');
+      if (!event.target.closest('.modal')) {
+        modal.classList.remove('active');
+        modal.removeEventListener('click', this.closeModalOutside);
+      }
     },
     saveItem() {
       if (!this.titulo || !this.descricao || !this.data || !this.hora) {
@@ -73,90 +101,83 @@ export default {
         return;
       }
 
-      const itemData = {
+      let formataHora = this.hora;
+      if(!this.hora.includes(+':00')) {
+        formataHora = this.hora + ':00'
+      }
+
+      const meetingData = {
         titulo: this.titulo,
         descricao: this.descricao,
         data: this.data,
-        // hora: this.hora
+        hora: formataHora
       };
 
-      const endpoint = this.itemID ? `http://localhost:8080/putassembleia/${this.itemID}` : 'http://localhost:8080/newassembleia/1';
-      const requestMethod = this.itemID ? 'put' : 'post';
-
-      axios[requestMethod](endpoint, itemData)
+      if (this.isEditing) {
+        this.updateItem(meetingData);
+      } else {
+        this.createItem(meetingData);
+      }
+    },
+    createItem(meetingData) {
+      axios.post('http://localhost:8080/newassembleia/1', meetingData)
         .then(response => {
           console.log(response.data);
-          // Adiciona o novo item à lista de itens
-          this.items.push(response.data);
-          // Fecha o modal
-          this.$refs.modalContainer.classList.remove('active');
+          this.resetForm();
+          this.closeModal();
         })
         .catch(error => {
-          console.error('Erro ao salvar item:', error);
+          console.error('Erro ao enviar dados:', error);
         });
     },
-    deleteItem(item) {
-      const confirmaExclusao = confirm("Tem certeza de que deseja excluir este item?");
-      
-      if (!confirmaExclusao) {
-        return; // Cancela a exclusão caso seja clicado em "Cancelar"
-      }
-      
-      axios.delete(`http://localhost:8080/deleteassembleia/${item.id}`)
-      .then(() => {
-        // Remover item da lista de itens que estão sendo exibidos
-        this.items = this.items.filter(i => i !== item);
-        console.log('Item excluído com sucesso:', item);
-      })
-      .catch(error => {
-        console.error('Erro ao excluir item: ', error);
-        // Tratar o erro aqui, se necessário
-      });
-    },
-    insertItem(item) {
-      this.items.push(item);  // Adicione o novo item ao array de itens
-    },
-    fetchItems() {
-      axios.get('http://localhost:8080/assembleia/1')
+    updateItem(meetingData) {
+      axios.put(`http://localhost:8080/putassembleia/${this.editId}`, meetingData)
         .then(response => {
-          this.items = response.data;
+          console.log('Reunião atualizada com sucesso:', response.data);
+          const index = this.meetings.findIndex(item => item.id === this.editId);
+          if (index !== -1) {
+            this.meetings.splice(index, 1, response.data);
+          }
+          this.resetForm();
+          this.closeModal();
         })
         .catch(error => {
-          console.error('Erro ao buscar dados:', error);
+          console.error('Erro ao atualizar reunião:', error);
         });
+    },
+    deleteItem(id) {
+      const confirmDelete = confirm('Tem certeza que deseja excluir?');
+      if (confirmDelete) {
+        axios.delete(`http://localhost:8080/deleteassembleia/${id}`)
+          .then(response => {
+            console.log('Reunião excluída com sucesso:', response.data);
+            this.meetings = this.meetings.filter(meeting => meeting.id !== id);
+          })
+          .catch(error => {
+            console.error('Erro ao excluir reunião:', error);
+          });
+      }
+    },
+    resetForm() {
+      this.titulo = '';
+      this.descricao = '';
+      this.data = '';
+      this.hora = '';
+    },
+    closeModal() {
+      const modal = document.querySelector('.modal-container');
+      modal.classList.remove('active');
+      modal.removeEventListener('click', this.closeModalOutside);
     }
   },
-  setup() {
-    const titulo = ref('');
-    const descricao = ref('');
-    const data = ref('');
-    const hora = ref('');
-
-    const state = reactive({
-      items: []
-    });
-
-    onMounted(() => {
-      fetchItems(); 
-    });
-
-    function fetchItems() {
-      axios.get('http://localhost:8080/assembleia/1')
-        .then(response => {
-          state.items = response.data;
-        })
-        .catch(error => {
-          console.error('Erro ao buscar dados:', error);
-        });
-    }
-    
-    return {
-      titulo,
-      descricao,
-      data,
-      hora,
-      items: state.items
-    };
+  mounted() {
+    axios.get('http://localhost:8080/assembleialistuser/1')
+      .then(response => {
+        this.meetings = response.data;
+      })
+      .catch(error => {
+        console.error('Erro ao carregar reuniões:', error);
+      });
   }
 }
 </script>

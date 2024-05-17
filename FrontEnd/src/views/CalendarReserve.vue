@@ -47,6 +47,28 @@ const nextMonth = () => {
 </script>
 
 <template>
+<div>
+  <div class="title">
+    <h4>Reserva</h4>
+    <h6>Condomínio >> Reservas >> Consulta</h6>
+  </div>
+
+  <div class="date">
+    <h3>Abril 2024</h3>
+  </div>
+  <div class="Suasreservas">
+    <h3>Suas Reservas:</h3>
+
+  </div>
+  <div class="VerdeReservado">
+  <div class="BotaoVerdde">
+    <span class="dotVerde"></span>
+  </div>
+    <h3>Reservado</h3>
+  </div>
+
+  <div class="OutraReserva">
+    <h3>Outras Reservas:</h3>
   <div class="juncao">
     <div class="informacoes">
       <div class="title">
@@ -97,6 +119,7 @@ const nextMonth = () => {
       </div>
     </div>
   </div>
+ </div>
 </template>
 
 <style scoped>

@@ -3,11 +3,11 @@
     <section class="wrapper">
       <div class="form signup">
         <header>Cadastrar-se</header>
-        <form action="#">
-          <input type="text" placeholder="Nome completo" required/>
-          <input type="text" placeholder="Complemento" required/>
-          <input type="email" placeholder="E-mail" required/>
-          <input type="password" placeholder="Senha" required/>
+        <form @submit.prevent="signUpUser">
+          <input type="text" placeholder="Nome completo" required name="signupName" ref="signupName" autocomplete="name"/>
+          <input type="text" placeholder="Complemento" required name="signupFlat" ref="signupFlat" autocomplete="address-level2"/>
+          <input type="email" placeholder="E-mail" required name="signupEmail" ref="signupEmail" autocomplete="email"/>
+          <input type="password" placeholder="Senha" required name="signupPassword" ref="signupPassword" autocomplete="new-password"/>
           <div class="checkbox">
             <input type="checkbox" id="signupCheck"/>
             <label for="signupCheck">Eu aceito os <strong>Termos de uso</strong> e <strong>Política de privacidade</strong></label>
@@ -17,9 +17,9 @@
       </div>
       <div class="form login">
         <header>Login</header>
-        <form action="#">
-          <input type="email" placeholder="E-mail" required/>
-          <input type="password" placeholder="Senha" required/>
+        <form @submit.prevent="loginUser">
+          <input type="email" placeholder="E-mail" required name="email" ref="email" autocomplete="email"/>
+          <input type="password" placeholder="Senha" required name="password" ref="password" autocomplete="current-password"/>
           <input type="submit" value="Entrar"/>
         </form>
       </div>
@@ -28,7 +28,7 @@
 </template>
 
 <script>
-export default {
+/*export default {
   name: 'LogInSignUp',
   mounted() {
     const wrapper = document.querySelector(".wrapper");
@@ -41,8 +41,49 @@ export default {
     signupHeader.addEventListener("click", () => {
       wrapper.classList.remove("active");
     });
+  },
+  methods: {
+    async loginUser() {
+      try {
+        const email = this.$refs.email.value;
+        const password = this.$refs.password.value;
+        const response = await fetch(`http://localhost:8080/validacadastro/${email}/${password}`);
+        const data = await response.json();
+        if (response.ok) {
+          console.log('Login bem-sucedido, ID do usuário:', data);
+          this.$router.push({ name: 'Home' });
+        } else {
+          console.error('Login falhou:', data);
+        }
+      } catch (error) {
+        console.error('Erro ao tentar fazer login:', error);
+      }
+    },
+    async signUpUser() {
+      try {
+        const nome = this.$refs.signupName.value;
+        const complemento = this.$refs.signupFlat.value;
+        const email = this.$refs.signupEmail.value;
+        const password = this.$refs.signupPassword.value;
+        const response = await fetch('http://localhost:8080/newusuario', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ nome, complemento, email, password })
+        });
+        if (response.ok) {
+          console.log('Cadastro bem-sucedido');
+          this.$router.push({ name: 'Home' });
+        } else {
+          console.error('Falha no cadastro:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Erro ao tentar cadastrar:', error);
+      }
+    }
   }
-}
+}*/
 </script>
 
 <style>
