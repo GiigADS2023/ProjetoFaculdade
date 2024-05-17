@@ -24,7 +24,6 @@
   </div>
 
   <div class="OutraReserva">
-   
     <h3>Outras Reservas:</h3>
   </div>
   <div class="AzulReservado">

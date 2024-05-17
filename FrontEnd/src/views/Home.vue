@@ -1,83 +1,82 @@
 <script setup>
-  import { ref, onMounted   } from 'vue'
-  import axios from 'axios'
-  let reservas = ref([]);
-  let ocorrencias = ref([]);
-  let reunioes = ref([]);
-  let achadosPerdidos = ref([]);
+import { ref, onMounted, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import axios from 'axios';
 
-  onMounted(() => {
-  // Obter reservas
+// Dados reativos
+let reservas = ref([]);
+let ocorrencias = ref([]);
+let reunioes = ref([]);
+let achadosPerdidos = ref([]);
+
+// Função para buscar dados
+const fetchData = () => {
   axios.get('http://localhost:8080/reservas')
     .then(response => {
-        reservas.value = response.data
+      reservas.value = response.data;
     })
     .catch(error => {
-        console.error('Erro ao obter reservas:', error)
-    })
+      console.error('Erro ao obter reservas:', error);
+    });
 
-  // Obter ocorrências
   axios.get('http://localhost:8080/ocorrencias')
     .then(response => {
-        ocorrencias.value = response.data
+      ocorrencias.value = response.data;
     })
     .catch(error => {
-        console.error('Erro ao obter ocorrências:', error)
-    })
+      console.error('Erro ao obter ocorrências:', error);
+    });
 
-  // Obter reuniões
   axios.get('http://localhost:8080/reunioes')
     .then(response => {
-        reunioes.value = response.data
+      reunioes.value = response.data;
     })
     .catch(error => {
-        console.error('Erro ao obter reuniões:', error)
-    })
+      console.error('Erro ao obter reuniões:', error);
+    });
 
-  // Obter achados e perdidos
   axios.get('http://localhost:8080/achados-perdidos')
     .then(response => {
-        achadosPerdidos.value = response.data
+      achadosPerdidos.value = response.data;
     })
     .catch(error => {
-        console.error('Erro ao obter achados e perdidos:', error)
-    })
-  })
+      console.error('Erro ao obter achados e perdidos:', error);
+    });
+};
 
-  const goToReserve = () => {
-    window.location.href = 'reserve';
+// Chamar fetchData quando o componente é montado
+onMounted(fetchData);
+
+// Roteamento
+const router = useRouter();
+const goToReserve = () => router.push({ name: 'Reserve' });
+const goToOccurrence = () => router.push({ name: 'Occurrence' });
+const goToMeeting = () => router.push({ name: 'Meeting' });
+
+// Atualizar os dados quando a rota mudar
+const route = useRoute();
+watch(route, () => {
+  fetchData();
+});
+
+// Painéis
+const panels = ref([
+  { 
+    icon: 'bx bx-user-voice icon',
+    title: 'Reuniões',
+    items: [] //reunioes 
+  },
+  { 
+    icon: 'bx bx-bell icon',
+    title: 'Ocorrências',
+    items: [] //ocorrencias 
+  },
+  { 
+    icon: 'bx bx-like icon',
+    title: 'Achados e perdidos',
+    items: [] //achadosPerdidos 
   }
-
-  const goToOccurrence = () => {
-    window.location.href = 'occurrence';
-  }
-
-  const goToMeeting = () => {
-    window.location.href = 'meeting';
-  }
-
-  const panels = ref([
-    { 
-      icon: 'bx bx-user-voice icon',
-      title: 'Reuniões',
-      items: [] // Substitui por = reunioes 
-    },
-    { 
-      icon: 'bx bx-bell icon',
-      title: 'Ocorrências',
-      items: [] // Substitui por = reservas ocorrencias
-    },
-    { 
-      icon: 'bx bx-calendar icon',
-      title: 'Reservas',
-      items:  [] // Substitui por = reservas
-    },
-    { 
-      icon: 'bx bx-like icon',
-      title: 'Achados e perdidos',
-      items: [] // Substitui por = achadosPerdidos 
-    }
-  ])
+]);
 </script>
 
 <template>
@@ -108,36 +107,35 @@
     <span class="text nav-text">{{ panel.title }}</span>
 
     <ul v-if="panel.items.length > 0" class="list">
-      <li class="list-item" v-for="(item, i) in panel.items" :key="i">{{ item }}</li>
+      <li class="list-item" v-for="(item, i) in panel.items" :key="i">{{ item.nome }}</li>
     </ul>
 
     <p v-else>Não há {{ panel.title.toLowerCase() }} no momento</p>
   </div>
-
 </template>
 
 <style>
-    .template {
-      margin: 0;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      background-color: #E4E9F7;
-    }
+  .template {
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    background-color: #E4E9F7;
+  }
 
-    .contact-info {
-      text-align: left;
-      margin-left: 150px;
-    }
+  .contact-info {
+    text-align: left;
+    margin-left: 150px;
+  }
 
-    .contact-info a {
-      text-decoration: none;
-      color: inherit; 
-      transition: color 0.3s ease; 
-    }
+  .contact-info a {
+    text-decoration: none;
+    color: inherit; 
+    transition: color 0.3s ease; 
+  }
 
   .contact-info a:hover {
-      color: rgb(0, 0, 255); 
+    color: rgb(0, 0, 255); 
   }
 
   .button-container {
@@ -165,7 +163,6 @@
   .button:last-child {
     margin-right: 0; 
   }
-
 
   .button:hover {
     border-color: #999; 
@@ -219,5 +216,4 @@
     border-top: 1px solid #ccc; 
     padding-top: 10px; 
   }
-
 </style>
