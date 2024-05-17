@@ -17,7 +17,7 @@ public class ReservaService {
 	    public List<ReservaModel> findAll(){ // vai retornar uma lista de Posts
 	        return reservaRepository.findAll();
 	    }
-	    public Optional<ReservaModel> findById(UUID id){ // vai retornar um unico   // Post passando o id
+	    public Optional<ReservaModel> findById(int id){ // vai retornar um unico   // Post passando o id
 	        return reservaRepository.findById(id);
 	    }
 	    public ReservaModel save(ReservaModel post){ // vai salvar um Post no Banco
@@ -25,5 +25,11 @@ public class ReservaService {
 	    }
 	    public void delete(ReservaModel post){ // vai excluir um post tem menu de contexto
 	    	reservaRepository.delete(post);
+	    }
+	    public List<ReservaModel> findByUser(int id){ // vai retornar uma lista de Posts
+	        return reservaRepository.findByUser(id);
+	    }
+	    public List<ReservaModel> findByMes(int mes){ // vai retornar uma lista de Posts
+	        return reservaRepository.findByMes(mes);
 	    }
 }

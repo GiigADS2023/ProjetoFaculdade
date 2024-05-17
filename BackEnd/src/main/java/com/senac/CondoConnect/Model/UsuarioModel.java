@@ -1,7 +1,6 @@
 package com.senac.CondoConnect.Model;
 
 import java.util.List;
-import java.util.UUID;
 
 import jakarta.persistence.*;
 
@@ -14,7 +13,7 @@ public class UsuarioModel {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private UUID id;
+	private int id;
 	@Column(nullable=false)
 	private String nomeUsuario;
 	@Column(nullable=false)
@@ -29,8 +28,12 @@ public class UsuarioModel {
 	private List<ReservaModel> reservalist;
 
 	
-	public UUID getId() {
+	public int getId() {
 		return id;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
 	}
 	public String getNomeUsuario() {
 		return nomeUsuario;
