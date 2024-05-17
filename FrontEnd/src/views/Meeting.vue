@@ -131,19 +131,19 @@ export default {
         });
     },
     updateItem(meetingData) {
-      axios.put(`http://localhost:8080/putassembleia/${this.editId}`, meetingData)
-        .then(response => {
-          console.log('Reunião atualizada com sucesso:', response.data);
-          const index = this.meetings.findIndex(item => item.id === this.editId);
-          if (index !== -1) {
-            this.meetings.splice(index, 1, response.data);
-          }
-          this.resetForm();
-          this.closeModal();
-        })
-        .catch(error => {
-          console.error('Erro ao atualizar reunião:', error);
-        });
+        axios.put(`http://localhost:8080/putassembleia/${this.editId}`, meetingData)
+            .then(response => {
+                console.log('Reunião atualizada com sucesso:', response.data);
+                const index = this.meetings.findIndex(item => item.id === this.editId);
+                if (index !== -1) {
+                    this.meetings.splice(index, 1, response.data);
+                }
+                this.resetForm();
+                this.closeModal();
+            })
+            .catch(error => {
+                console.error('Erro ao atualizar:', error);
+            });
     },
     deleteItem(id) {
       const confirmDelete = confirm('Tem certeza que deseja excluir?');
@@ -154,7 +154,7 @@ export default {
             this.meetings = this.meetings.filter(meeting => meeting.id !== id);
           })
           .catch(error => {
-            console.error('Erro ao excluir reunião:', error);
+            console.error('Erro ao excluir:', error);
           });
       }
     },
@@ -176,7 +176,7 @@ export default {
         this.meetings = response.data;
       })
       .catch(error => {
-        console.error('Erro ao carregar reuniões:', error);
+        console.error('Erro ao carregar:', error);
       });
   }
 }
