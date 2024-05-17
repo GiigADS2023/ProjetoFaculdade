@@ -1,137 +1,170 @@
 <template>
-  <div class="title">
-    <h4>Achados e Perdidos</h4>
-    <h6>Condomínio >> Achados e Perdidos >> Alterar</h6>
-  </div>
-
-  <div class="container">
-    <div class="header">
-      <i class="bx bx-like icon"><span>Achados e Perdidos</span></i>    
-      <button @click="openModal" id="new">Criar Achados e Perdidos</button>
+  <div>
+    <div class="title">
+      <h4>Achados e Perdidos</h4>
+      <h6>Condomínio >> Achados e Perdidos >> Alterar</h6>
     </div>
-
-    <div class="table">
-      <table> 
-        <thead>
-          <tr>
-            <th>Título</th>
-            <th>Descrição</th>
-            <th class="action">Editar</th>
-            <th class="action">Excluir</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, index) in items" :key="index">
-            <td>{{ item.titulo }}</td>
-            <td>{{ item.descricao }}</td>
-            <td class="action"><button @click="saveItem"><i class='bx bx-edit'></i></button></td>
-            <td class="action"><button @click="deleteItem(item)"><i class='bx bx-trash'></i></button></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="modal-container" ref="modalContainer">
-      <div class="modal">
-        <form>
-          <label for="m-title">Título</label>
-          <input id="m-title" type="text" v-model="titulo" required/>
-          <label for="m-description">Descrição</label>
-          <input id="m-description" type="text" v-model="descricao" required/>
-          <button type="button" @click="saveItem">Salvar</button>
-        </form>
+ 
+    <div class="container">
+      <div class="header">
+        <i class="bx bx-like icon"><span>Achados e Perdidos</span></i>
+        <button @click="openModal(null)" id="new">Criar Achados e Perdidos</button>
+      </div>
+ 
+      <div class="table">
+        <table>
+          <thead>
+            <tr>
+              <th>Título</th>
+              <th>Descrição</th>
+              <th>Data</th>
+              <th class="action">Editar</th>
+              <th class="action">Excluir</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(lostfound, index) in lostfounds" :key="index">
+              <td>{{ lostfound ? lostfound.titulo : '' }}</td>
+              <td>{{ lostfound ? lostfound.descricao : '' }}</td>
+              <td>{{ lostfound ? lostfound.data : '' }}</td>
+              <td class="action"><button @click="openModal(lostfound)"><i class='bx bx-edit'></i></button></td>
+              <td class="action"><button @click="deleteItem(lostfound.id)"><i class='bx bx-trash'></i></button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+ 
+      <div class="modal-container">
+        <div class="modal">
+          <form>
+            <label for="m-title">Título</label>
+            <input id="m-title" v-model="titulo" type="text" required/>
+            <label for="m-description">Descrição</label>
+            <input id="m-description" v-model="descricao" type="text" required/>
+            <label for="m-date">Data</label>
+            <input id="m-date" v-model="data" type="date" required/>
+            <button @click.prevent="saveItem">{{ isEditing ? 'Atualizar' : 'Salvar' }}</button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
 </template>
-
+ 
 <script>
 import axios from 'axios';
-import { ref, reactive, onMounted } from 'vue';
-
+ 
 export default {
   data() {
     return {
-      items: [] // Adicione um array para armazenar os itens
+      lostfounds: [],
+      titulo: '',
+      descricao: '',
+      data: '',
+      isEditing: false,
+      editId: null
     };
   },
   methods: {
-    openModal() {
-      this.$refs.modalContainer.classList.add('active');
+    openModal(lostfound) {
+      if (lostfound) {
+        this.isEditing = true;
+        this.titulo = lostfound.titulo;
+        this.descricao = lostfound.descricao;
+        this.data = lostfound.data;
+        this.editId = lostfound.id;
+      } else {
+        this.isEditing = false;
+        this.editId = null;
+        this.resetForm();
+      }
+      const modal = document.querySelector('.modal-container');
+      modal.classList.add('active');
+      modal.addEventListener('click', this.closeModalOutside);
+    },
+    closeModalOutside(event) {
+      const modal = document.querySelector('.modal-container');
+      if (!event.target.closest('.modal')) {
+        modal.classList.remove('active');
+        modal.removeEventListener('click', this.closeModalOutside);
+      }
     },
     saveItem() {
-      if (!this.titulo || !this.descricao) {
+      if (!this.titulo || !this.descricao || !this.data) {
         alert('Por favor, preencha todos os campos.');
         return;
       }
 
-      const itemData = {
+      const lostfoundData = {
         titulo: this.titulo,
-        descricao: this.descricao
+        descricao: this.descricao,
+        data: this.data,
       };
 
-      const endpoint = this.itemID ? `http://localhost:8080/putachadoperdido/1/${this.itemID}` : 'http://localhost:8080/newachadoperdido/1';
-      const requestMethod = this.itemID ? 'put' : 'post';
-
-      axios[requestMethod](endpoint, itemData)
+      if (this.isEditing) {
+        this.updateItem(lostfoundData);
+      } else {
+        this.createItem(lostfoundData);
+      }
+    },
+    createItem(lostfoundData) {
+      axios.post('http://localhost:8080/newachado/1', lostfoundData)
         .then(response => {
           console.log(response.data);
-          // Atualiza os itens
-          this.fetchItems();
-          // Fecha o modal
-          this.$refs.modalContainer.classList.remove('active');
+          this.resetForm();
+          this.closeModal();
         })
         .catch(error => {
-          console.error('Erro ao salvar item:', error);
+          console.error('Erro ao enviar dados:', error);
         });
     },
-    deleteItem(item) {
-      const confirmaExclusao = confirm("Tem certeza de que deseja excluir este item?");
-      
-      if (!confirmaExclusao) {
-        return; // Cancela a exclusão caso seja clicado em "Cancelar"
+    updateItem(lostfoundData) {
+        axios.put(`http://localhost:8080/putcomunicadoachado/${this.editId}`, lostfoundData)
+            .then(response => {
+                console.log('Atualizado com sucesso:', response.data);
+                const index = this.lostfounds.findIndex(item => item.id === this.editId);
+                if (index !== -1) {
+                    this.lostfounds.splice(index, 1, response.data);
+                }
+                this.resetForm();
+                this.closeModal();
+            })
+            .catch(error => {
+                console.error('Erro ao atualizar:', error);
+            });
+    },
+    deleteItem(id) {
+      const confirmDelete = confirm('Tem certeza que deseja excluir?');
+      if (confirmDelete) {
+        axios.delete(`http://localhost:8080/deletecomunicado/${id}`)
+          .then(response => {
+            console.log('Excluído com sucesso:', response.data);
+            this.lostfounds = this.lostfounds.filter(lostfound => lostfound.id !== id);
+          })
+          .catch(error => {
+            console.error('Erro ao excluir:', error);
+          });
       }
-      
-      axios.delete(`http://localhost:8080/deleteachadoperdido/1/${item.id}`)
-        .then(response => {
-          // Remover item da lista de itens que estão sendo exibidos
-          this.items = this.items.filter(i => i !== item);
-        })
-        .catch(error => {
-          console.error('Erro ao excluir item: ', error);
-        });
     },
-    insertItem(item) {
-      this.items.push(item);  // Adicione o novo item ao array de itens
+    resetForm() {
+      this.titulo = '';
+      this.descricao = '';
+      this.data = '';
     },
-    fetchItems() {
-      axios.get('http://localhost:8080/newassembleia/1')
-        .then(response => {
-          this.items = response.data; // Atualize o array de itens com os dados obtidos
-        })
-        .catch(error => {
-          console.error('Erro ao buscar dados:', error);
-        });
+    closeModal() {
+      const modal = document.querySelector('.modal-container');
+      modal.classList.remove('active');
+      modal.removeEventListener('click', this.closeModalOutside);
     }
   },
-  setup() {
-    const titulo = ref('');
-    const descricao = ref('');
-    
-    //Usado para reatividade em items
-    const state = reactive({
-      items: []
-    });
-
-    onMounted(() => {
-      this.fetchItems(); // Ao montar o componente, buscar os itens existentes
-    });
-
-    return {
-      titulo,
-      descricao,
-      items: state.items // Retornar items do estado reativo
-    };
+  mounted() {
+    axios.get('http://localhost:8080/achadouser/1')
+      .then(response => {
+        this.lostfounds = response.data;
+      })
+      .catch(error => {
+        console.error('Erro ao carregar:', error);
+      });
   }
 }
 </script>
