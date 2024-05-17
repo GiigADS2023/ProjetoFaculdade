@@ -1,8 +1,9 @@
 package com.senac.CondoConnect.Model;
 
+import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
-import java.util.UUID;
 
 import jakarta.persistence.*;
 
@@ -12,20 +13,22 @@ public class AssembleiaModel {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private UUID id;
+	private int id;
 	@Column
 	private String titulo;
 	@Column
 	private String descricao;
 	@Column
-	private LocalDate data;
+	private Date data;
+	@Column
+	private Time hora;
 	@ManyToOne
 	private UsuarioModel usuario;
 	
-	public UUID getId() {
+	public int getId() {
 		return id;
 	}
-	public void setId(UUID id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 	public String getTitulo() {
@@ -40,10 +43,10 @@ public class AssembleiaModel {
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
 	}
-	public LocalDate getData() {
+	public Date getData() {
 		return data;
 	}
-	public void setData(LocalDate data) {
+	public void setData(Date data) {
 		this.data = data;
 	}
 	public UsuarioModel getUsuario() {
@@ -51,6 +54,12 @@ public class AssembleiaModel {
 	}
 	public void setUsuario(UsuarioModel usuario) {
 		this.usuario = usuario;
+	}
+	public Time getHora() {
+		return hora;
+	}
+	public void setHora(Time hora) {
+		this.hora = hora;
 	}
 	
 	

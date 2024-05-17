@@ -17,7 +17,7 @@ public class UsuarioService {
 	    public List<UsuarioModel> findAll(){ // vai retornar uma lista de Posts
 	        return usuarioRepository.findAll();
 	    }
-	    public Optional<UsuarioModel> findById(UUID id){ // vai retornar um unico   // Post passando o id
+	    public Optional<UsuarioModel> findById(int id){ // vai retornar um unico   // Post passando o id
 	        return usuarioRepository.findById(id);
 	    }
 	    public UsuarioModel save(UsuarioModel post){ // vai salvar um Post no Banco
@@ -26,5 +26,10 @@ public class UsuarioService {
 	    public void delete(UsuarioModel post){ // vai excluir um post tem menu de contexto
 	    	usuarioRepository.delete(post);
 	    }
-
+	    public UsuarioModel findByName(String post){ // vai retornar um unico   // Post passando o id
+	        return usuarioRepository.findByName(post);
+	    }
+	    public Optional<UsuarioModel> findByEmail(String post){ // vai retornar um unico   // Post passando o id
+	        return usuarioRepository.findByEmail(post);
+	    }
 }
