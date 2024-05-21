@@ -2,7 +2,6 @@ package com.senac.CondoConnect.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,13 +28,7 @@ public class ComunicadoService {
 	    public List<ComunicadoModel> getListComunicado(){
 	    	return comunicadoRepository.getListComunicado();
 	    }
-	    public List<ComunicadoModel> getListAchado(){
-	    	return comunicadoRepository.getListAchado();
-	    }
-	    public List<ComunicadoModel> finComunicadoByUser(int id){
-	    	return comunicadoRepository.findComunicadoByUser(id);
-	    }
-	    public List<ComunicadoModel> finAchadoByUser(int id){
-	    	return comunicadoRepository.findAchadoByUser(id);
-	    }
+		public List<ComunicadoModel> findByUser(int id){
+			return comunicadoRepository.findByUser(id);
+		}
 }

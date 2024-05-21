@@ -2,6 +2,7 @@ package com.senac.CondoConnect.controller;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,7 @@ import com.senac.CondoConnect.service.UsuarioService;
 import jakarta.validation.Valid;
 
 @RestController
-@CrossOrigin(origins  = "http://localhost:5173/meeting")
+@CrossOrigin(origins  = "*")
 public class UsuarioController {
 
 	@Autowired
@@ -86,7 +87,6 @@ public class UsuarioController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(0);
 		}	
 		if (blogappModelOptional.isPresent()) {
-			String senhau = blogappModelOptional.get().getSenhaUsuario();
 			
 			if(senha.equals(blogappModelOptional.get().getSenhaUsuario())) {
 				return ResponseEntity.status(HttpStatus.OK).body(blogappModelOptional.get().getId());
