@@ -47,79 +47,80 @@ const nextMonth = () => {
 </script>
 
 <template>
-<div>
-  <div class="title">
-    <h4>Reserva</h4>
-    <h6>Condomínio >> Reservas >> Consulta</h6>
-  </div>
+  <div>
+    <div class="title">
+      <h4>Reserva</h4>
+      <h6>Condomínio >> Reservas >> Consulta</h6>
+    </div>
 
-  <div class="date">
-    <h3>Abril 2024</h3>
-  </div>
-  <div class="Suasreservas">
-    <h3>Suas Reservas:</h3>
+    <div class="date">
+      <h3>Abril 2024</h3>
+    </div>
+    <div class="Suasreservas">
+      <h3>Suas Reservas:</h3>
 
-  </div>
-  <div class="VerdeReservado">
-  <div class="BotaoVerdde">
-    <span class="dotVerde"></span>
-  </div>
-    <h3>Reservado</h3>
-  </div>
+    </div>
+    <div class="VerdeReservado">
+      <div class="BotaoVerdde">
+        <span class="dotVerde"></span>
+      </div>
+      <h3>Reservado</h3>
+    </div>
 
-  <div class="OutraReserva">
-    <h3>Outras Reservas:</h3>
-  <div class="juncao">
-    <div class="informacoes">
-      <div class="title">
-        <h4>Reserva</h4>
-        <h6>Condomínio >> Reservas >> Consulta</h6>
-      </div>
-
-      <div class="date">
-        <h3>Abril 2024</h3>
-      </div>
-      <div class="Suasreservas">
-        <h3>Suas Reservas:</h3>
-      </div>
-      <div class="VerdeReservado">
-        <div class="BotaoVerdde">
-          <span class="dotVerde"></span>
-        </div>
-        <h3>Reservado</h3>
-      </div>
-
-      <div class="OutraReserva">
-        <h3>Outras Reservas:</h3>
-      </div>
-      <div class="AzulReservado">
-        <div class="BotaoAzul">
-          <span class="dotAzul"></span>
-        </div>
-        <h3>Reserva</h3>
-      </div>
-      <div class="Calendario">
-        <div class="calendar">
-          <div class="header">
-            <button @click="prevMonth">‹</button>
-            <span>{{ monthNames[currentMonth] }} {{ currentYear }}</span>
-            <button @click="nextMonth">›</button>
+    <div class="OutraReserva">
+      <h3>Outras Reservas:</h3>
+      <div class="juncao">
+        <div class="informacoes">
+          <div class="title">
+            <h4>Reserva</h4>
+            <h6>Condomínio >> Reservas >> Consulta</h6>
           </div>
-          <div class="weekdays">
-            <div v-for="day in daysOfWeek" :key="day">{{ day }}</div>
+
+          <div class="date">
+            <h3>Abril 2024</h3>
           </div>
-          <div class="days">
-            <div v-for="day in blankDays" :key="day" class="day blank"></div>
-            <div v-for="day in daysInMonth" :key="day" class="day">
-              <span>{{ day }}</span>
-              <div v-if="events[day]" class="event" v-for="event in events[day]" :key="event">{{ event }}</div>
+          <div class="Suasreservas">
+            <h3>Suas Reservas:</h3>
+          </div>
+          <div class="VerdeReservado">
+            <div class="BotaoVerdde">
+              <span class="dotVerde"></span>
+            </div>
+            <h3>Reservado</h3>
+          </div>
+
+          <div class="OutraReserva">
+            <h3>Outras Reservas:</h3>
+          </div>
+          <div class="AzulReservado">
+            <div class="BotaoAzul">
+              <span class="dotAzul"></span>
+            </div>
+            <h3>Reserva</h3>
+          </div>
+          <div class="Calendario">
+            <div class="calendar">
+              <div class="header">
+                <button @click="prevMonth">‹</button>
+                <span>{{ monthNames[currentMonth] }} {{ currentYear }}</span>
+                <button @click="nextMonth">›</button>
+              </div>
+              <div class="weekdays">
+                <div v-for="day in daysOfWeek" :key="day">{{ day }}</div>
+              </div>
+              <div class="days">
+                <div v-for="day in blankDays" :key="day" class="day blank"></div>
+                <div v-for="day in daysInMonth" :key="day" class="day">
+                  <span>{{ day }}</span>
+                  <div v-if="events[day]" class="event" v-for="event in events[day]" :key="event">{{ event }}</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
- </div>
 </template>
 
 <style scoped>

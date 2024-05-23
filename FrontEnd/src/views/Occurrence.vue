@@ -1,4 +1,5 @@
 <template>
+<div>
   <div class="title">
     <h4>Ocorrências</h4>
     <h6>Condomínio >> Ocorrências >>  Consultar</h6>
@@ -50,6 +51,7 @@
       </div>
     </div>
   </div>
+</div>
 </template>
 
 <script>
