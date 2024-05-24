@@ -24,9 +24,9 @@
           </thead>
           <tbody>
             <tr v-for="(reserve, index) in reserves" :key="index">
-              <td>{{ reserve.ambiente }}</td>
+              <td>{{ reserve.espaco }}</td>
               <td>{{ reserve.data }}</td>
-              <td>{{ reserve.descricao }}</td>
+              <td>{{ reserve.comentario }}</td>
               <td class="action"><button @click="openModal(reserve)"><i class='bx bx-edit'></i></button></td>
               <td class="action"><button @click="deleteItem(reserve.id)"><i class='bx bx-trash'></i></button></td>
             </tr>
@@ -37,8 +37,8 @@
       <div class="modal-container">
         <div class="modal">
           <form @submit.prevent="saveItem">
-            <label for="m-ambiente">Ambiente</label>
-            <select id="m-ambiente" v-model="ambiente" required class="styled-select">
+            <label for="m-espaco">ambiente</label>
+            <select id="m-espaco" v-model="espaco" required class="styled-select">
               <option value="" disabled>Selecione o ambiente</option>
               <option value="Salão A">Salão A</option>
               <option value="Salão B">Salão B</option>
@@ -46,7 +46,7 @@
             <label for="m-date">Data</label>
             <input id="m-date" v-model="data" type="date" required/>
             <label for="m-description">Descrição</label>
-            <input id="m-description" v-model="descricao" type="text" required/>
+            <input id="m-description" v-model="comentario" type="text" required/>
             <button type="submit">{{ isEditing ? 'Atualizar' : 'Salvar' }}</button>
           </form>
         </div>
@@ -62,9 +62,9 @@ export default {
   data() {
     return {
       reserves: [],
-      ambiente: '',
+      espaco: '',
       data: '',
-      descricao: '',
+      comentario: '',
       isEditing: false,
       editId: null
     };
@@ -73,9 +73,9 @@ export default {
     openModal(reserve) {
       if (reserve) {
         this.isEditing = true;
-        this.ambiente = reserve.ambiente;
+        this.espaco = reserve.espaco;
         this.data = reserve.data;
-        this.descricao = reserve.descricao;
+        this.comentario = reserve.comentario;
         this.editId = reserve.id;
       } else {
         this.isEditing = false;
@@ -94,15 +94,15 @@ export default {
       }
     },
     saveItem() {
-      if (!this.ambiente || !this.data || !this.descricao) {
+      if (!this.espaco || !this.data || !this.comentario) {
         alert('Por favor, preencha todos os campos.');
         return;
       }
 
       const reserveData = {
-        ambiente: this.ambiente,
+        espaco: this.espaco,
         data: this.data,
-        descricao: this.descricao,
+        comentario: this.comentario,
       };
 
       if (this.isEditing) {
@@ -152,9 +152,9 @@ export default {
       }
     },
     resetForm() {
-      this.ambiente = '';
+      this.espaco = '';
       this.data = '';
-      this.descricao = '';
+      this.comentario = '';
     },
     closeModal() {
       const modal = document.querySelector('.modal-container');
