@@ -119,7 +119,7 @@ export default {
         });
     },
     updateItem(lostfoundData) {
-        axios.put(`http://localhost:8080/putcomunicadoachado/${this.editId}`, lostfoundData)
+        axios.put(`http://localhost:8080/putachado/${this.editId}`, lostfoundData)
             .then(response => {
                 console.log('Atualizado com sucesso:', response.data);
                 const index = this.lostfounds.findIndex(item => item.id === this.editId);
@@ -136,7 +136,7 @@ export default {
     deleteItem(id) {
       const confirmDelete = confirm('Tem certeza que deseja excluir?');
       if (confirmDelete) {
-        axios.delete(`http://localhost:8080/deletecomunicado/${id}`)
+        axios.delete(`http://localhost:8080/deleteachado/${id}`)
           .then(response => {
             console.log('Excluído com sucesso:', response.data);
             this.lostfounds = this.lostfounds.filter(lostfound => lostfound.id !== id);
