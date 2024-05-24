@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.senac.CondoConnect.Model.AssembleiaModel;
-import com.senac.CondoConnect.Model.ReservaModel;
 import com.senac.CondoConnect.Model.UsuarioModel;
 import com.senac.CondoConnect.dtos.AssembleiaRecord;
 import com.senac.CondoConnect.service.AssembleiaService;
@@ -34,7 +33,7 @@ public class AssembleiaController {
 	@Autowired
 	UsuarioService usuarioservice; 
 	
-	@PostMapping(value ="/newassembleia/{id}") //retorna 201
+	@PostMapping(value ="/	/{id}") //retorna 201
 	public ResponseEntity<Object> saveAssembleia(@RequestBody @Valid AssembleiaRecord assembleiadto, @PathVariable("id") int id) {
 		
 		Optional<UsuarioModel> usuariomodel = usuarioservice.findById(id);
@@ -76,18 +75,21 @@ public class AssembleiaController {
 		return ResponseEntity.status(HttpStatus.OK).body("Deleted sucefully");
 	}
 	
-	@PutMapping(value ="/putassembleia/{id}")
-	public ResponseEntity<Object> putAssembleia(@RequestBody @Valid AssembleiaRecord assembleiadto,@PathVariable("id") int id){
-		Optional<AssembleiaModel> blogappModelOptional = assembleiaservice.findById(id);
-
-		if(!blogappModelOptional.isPresent()) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("assembleia not found.");
-		}
-		var assembleiaModel = new AssembleiaModel();
-		BeanUtils.copyProperties(assembleiadto, assembleiaModel);
-		assembleiaModel.setId(blogappModelOptional.get().getId());
-		return ResponseEntity.status(HttpStatus.CREATED).body(assembleiaservice.save(assembleiaModel));
-	}
+	@PutMapping(value = "/putassembleia/{id}")
+    public ResponseEntity<Object> putAssembleia(@RequestBody @Valid AssembleiaRecord assembleiadto, @PathVariable("id") int id) {
+        Optional<AssembleiaModel> assembleiaModelOptional = assembleiaservice.findById(id);
+   
+        if (!assembleiaModelOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("assembleia not found.");
+        }
+   
+        AssembleiaModel assembleiaModel = assembleiaModelOptional.get();
+        BeanUtils.copyProperties(assembleiadto, assembleiaModel, "id", "usuario");  // Preserve o ID e o usuário
+   
+        AssembleiaModel updatedAssembleia = assembleiaservice.save(assembleiaModel);
+   
+        return ResponseEntity.status(HttpStatus.OK).body(updatedAssembleia);
+    }  
 	@GetMapping(value = "/assembleialist")
 	public ResponseEntity<List<AssembleiaModel>> getAssembleiaList(){
 		List<AssembleiaModel> assembleia = assembleiaservice.getListAssembleia();

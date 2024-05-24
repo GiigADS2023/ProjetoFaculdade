@@ -2,7 +2,6 @@ package com.senac.CondoConnect.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,9 +24,6 @@ public class UsuarioService {
 	    }
 	    public void delete(UsuarioModel post){ // vai excluir um post tem menu de contexto
 	    	usuarioRepository.delete(post);
-	    }
-	    public UsuarioModel findByName(String post){ // vai retornar um unico   // Post passando o id
-	        return usuarioRepository.findByName(post);
 	    }
 	    public Optional<UsuarioModel> findByEmail(String post){ // vai retornar um unico   // Post passando o id
 	        return usuarioRepository.findByEmail(post);

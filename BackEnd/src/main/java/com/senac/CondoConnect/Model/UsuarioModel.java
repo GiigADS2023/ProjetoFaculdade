@@ -2,14 +2,18 @@ package com.senac.CondoConnect.Model;
 
 import java.util.List;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 
 @Entity
 @Table(name="Moradores")
 public class UsuarioModel {
-	
-	private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -18,14 +22,16 @@ public class UsuarioModel {
 	private String nomeUsuario;
 	@Column(nullable=false)
 	private String apartamentoUsuario;
-	@Column
+	@Column(nullable= false)
 	private String emailUsuario;
-	@Column
+	@Column(nullable= false, unique=true)
 	private String senhaUsuario;
 	@OneToMany
 	private List<ComunicadoModel> comunicadolist;
 	@OneToMany
 	private List<ReservaModel> reservalist;
+	@OneToMany
+	private List<AchadoModel> achadolist;
 
 	
 	public int getId() {
@@ -71,6 +77,14 @@ public class UsuarioModel {
 	public void setReservalist(List<ReservaModel> reservalist) {
 		this.reservalist = reservalist;
 	}
+
+    public List<AchadoModel> getAchadolist() {
+        return achadolist;
+    }
+
+    public void setAchadolist(List<AchadoModel> achadolist) {
+        this.achadolist = achadolist;
+    }
 	
 
 }
