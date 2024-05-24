@@ -3,7 +3,7 @@
 </script>
 
 <template>
-
+<div>
   <div class="title">
     <h4>Reserva</h4>
     <h6>Condomínio >> Reservas >> Consulta</h6>
@@ -33,7 +33,7 @@
   </div>
     <h3>Reserva</h3>
   </div>
-
+</div>
 </template>
 
 

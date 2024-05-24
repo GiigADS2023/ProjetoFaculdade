@@ -1,8 +1,5 @@
 package com.senac.CondoConnect.Model;
 
-import java.sql.Time;
-import java.time.LocalDate;
-import java.util.Date;
 
 import jakarta.persistence.*;
 
@@ -17,10 +14,6 @@ public class ComunicadoModel {
 	private String tituloComunicado;
 	@Column(nullable= false)
 	private String descricaoComunicado;
-	@Column(nullable= false)
-	private boolean tipoComunicado;
-	@Column
-	private LocalDate dataComunicado;
 	@ManyToOne
 	private UsuarioModel usuario;
 	
@@ -42,23 +35,11 @@ public class ComunicadoModel {
 	public void setdescricaoComunicado(String descricaoComunicado) {
 		this.descricaoComunicado = descricaoComunicado;
 	}
-	public boolean istipoComunicado() {
-		return tipoComunicado;
-	}
-	public void settipoComunicado(boolean tipoComunicado) {
-		this.tipoComunicado = tipoComunicado;
-	}
 	public UsuarioModel getUsuario() {
 		return usuario;
 	}
 	public void setUsuario(UsuarioModel usuario) {
 		this.usuario = usuario;
-	}
-	public LocalDate getDataComunicado() {
-		return dataComunicado;
-	}
-	public void setDataComunicado(LocalDate dataComunicado) {
-		this.dataComunicado = dataComunicado;
 	}
 	
 	

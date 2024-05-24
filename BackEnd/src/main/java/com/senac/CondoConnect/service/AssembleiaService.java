@@ -2,7 +2,7 @@ package com.senac.CondoConnect.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ import com.senac.CondoConnect.repository.AssembleiaRepository;
 @Service
 public class AssembleiaService {
 
-	 @Autowired
+		@Autowired
 	    AssembleiaRepository assembleiaRepository;
 	    public List<AssembleiaModel> findAll(){ // vai retornar uma lista de Posts
 	        return assembleiaRepository.findAll();

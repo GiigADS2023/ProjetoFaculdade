@@ -1,6 +1,5 @@
 package com.senac.CondoConnect.controller;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.senac.CondoConnect.Model.ComunicadoModel;
-import com.senac.CondoConnect.Model.ReservaModel;
 import com.senac.CondoConnect.Model.UsuarioModel;
 import com.senac.CondoConnect.dtos.ComunicadoRecord;
 import com.senac.CondoConnect.service.ComunicadoService;
@@ -40,20 +38,8 @@ public class ComunicadoController {
 		Optional<UsuarioModel> userModel = userservice.findById(id);
 		var comunicadomodel = new ComunicadoModel();
 		BeanUtils.copyProperties(comunicadodto, comunicadomodel);
-		comunicadomodel.setDataComunicado(LocalDate.now());
 		comunicadomodel.setUsuario(userModel.get());
 		return ResponseEntity.status(HttpStatus.CREATED).body(comunicadoservice.save(comunicadomodel));
-	}
-	
-	@GetMapping(value = "/comunicado")
-	public ResponseEntity<List<ComunicadoModel>> getComunicado(){
-		List<ComunicadoModel> comunicado = comunicadoservice.findAll();
-		
-		if (comunicado.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(comunicado);
-			
-		}
-			return ResponseEntity.status(HttpStatus.OK).body(comunicado);
 	}
 	
 	@GetMapping(value ="/comunicado/{id}")
@@ -77,7 +63,7 @@ public class ComunicadoController {
 		return ResponseEntity.status(HttpStatus.OK).body("Deleted sucefully");
 	}
 	
-	@PutMapping(value ="/putcomunicado/{id}")
+	@PutMapping(value ="/putcomunicadoa/{id}")
 	public ResponseEntity<Object> putComunicado(@RequestBody @Valid ComunicadoRecord comunicadodto,@PathVariable("id") int id){
 		Optional<ComunicadoModel> blogappModelOptional = comunicadoservice.findById(id);
 
@@ -85,7 +71,7 @@ public class ComunicadoController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("comunicado not found.");
 		}
 		var comunicadoModel = new ComunicadoModel();
-		BeanUtils.copyProperties(comunicadodto, comunicadoModel);
+		BeanUtils.copyProperties(comunicadodto, comunicadoModel, "id", "usuario");
 		comunicadoModel.setId(blogappModelOptional.get().getId());
 		return ResponseEntity.status(HttpStatus.CREATED).body(comunicadoservice.save(comunicadoModel));
 	}
@@ -99,29 +85,10 @@ public class ComunicadoController {
 		}
 			return ResponseEntity.status(HttpStatus.OK).body(comunicado);
 	}
-	@GetMapping(value = "/achadolist")
-	public ResponseEntity<List<ComunicadoModel>> getAchadoList(){
-		List<ComunicadoModel> comunicado = comunicadoservice.getListAchado();
-		
-		if (comunicado.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(comunicado);
-			
-		}
-			return ResponseEntity.status(HttpStatus.OK).body(comunicado);
-	}
-	@GetMapping(value = "/achadouser/{id}")
-	public ResponseEntity<List<ComunicadoModel>> getAchadoUser(@PathVariable("id") int id){
-		List<ComunicadoModel> comunicado = comunicadoservice.finAchadoByUser(id);
-		
-		if (comunicado.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(comunicado);
-			
-		}
-			return ResponseEntity.status(HttpStatus.OK).body(comunicado);
-	}
+
 	@GetMapping(value = "/comuniadouser/{id}")
 	public ResponseEntity<List<ComunicadoModel>> getComunicadoUser(@PathVariable("id") int id){
-		List<ComunicadoModel> comunicado = comunicadoservice.finComunicadoByUser(id);
+		List<ComunicadoModel> comunicado = comunicadoservice.findByUser(id);
 		
 		if (comunicado.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(comunicado);

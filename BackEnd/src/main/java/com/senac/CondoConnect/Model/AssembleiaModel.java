@@ -1,11 +1,15 @@
 package com.senac.CondoConnect.Model;
 
 import java.sql.Time;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.Date;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name="Assembleia")
@@ -14,13 +18,13 @@ public class AssembleiaModel {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
-	@Column
+	@Column(nullable= false)
 	private String titulo;
-	@Column
+	@Column(nullable= false)
 	private String descricao;
-	@Column
+	@Column(nullable= false)
 	private Date data;
-	@Column
+	@Column(nullable= false)
 	private Time hora;
 	@ManyToOne
 	private UsuarioModel usuario;

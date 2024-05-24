@@ -1,5 +1,7 @@
 package com.senac.CondoConnect.dtos;
 
-public record UsuarioRecord(String nomeUsuario, String apartamentoUsuario, String senhaUsuario, String emailUsuario) {
+import jakarta.validation.constraints.NotBlank;
+
+public record UsuarioRecord(String nomeUsuario, @NotBlank String apartamentoUsuario, String senhaUsuario, String emailUsuario) {
 
 }

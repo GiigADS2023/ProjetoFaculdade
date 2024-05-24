@@ -14,15 +14,15 @@ public class ReservaModel {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 	
-	@Column
+	@Column(nullable= false)
 	private String comentario;
 	@ManyToOne
 	private UsuarioModel usuario;
 	@ManyToOne
 	private EspacoModel espaco;
-	@Column
+	@Column(nullable= false)
 	private Date dataInicio;
-	@Column
+	@Column(nullable= false)
 	private Date dataFinal;
 	
 	public int getId() {

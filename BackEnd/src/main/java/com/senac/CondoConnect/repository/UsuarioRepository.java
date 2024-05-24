@@ -10,9 +10,6 @@ import org.springframework.data.jpa.repository.Query;
 import com.senac.CondoConnect.Model.UsuarioModel;
 
 public interface UsuarioRepository extends JpaRepository<UsuarioModel, UUID>{
-
-	@Query(nativeQuery = true, value = "call FindByName()")
-    UsuarioModel findByName (String nome);
 	
 	@Query(nativeQuery = true, value = "Select * from moradores where email_usuario = :Email")
     Optional<UsuarioModel> findByEmail (String Email);
