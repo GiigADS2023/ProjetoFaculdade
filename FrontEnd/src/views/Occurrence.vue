@@ -1,64 +1,175 @@
 <template>
-  <div class="title">
-    <h4>Ocorrências</h4>
-    <h6>Condomínio >> Ocorrências >>  Consultar</h6>
-  </div>
-
-  <div class="container">
-    <div class="header">
-      <i class="bx bx-like icon" ><span>Ocorrências</span></i>    
-      <button @click="openModal()" id="new">Criar Ocorrência</button>
+  <div>
+    <div class="title">
+      <h4>Ocorrências</h4>
+      <h6>Condomínio >> Ocorrências >> Alterar</h6>
     </div>
-
-    <div class="table">
-      <table>
-        <thead>
-          <tr>
-            <th>Título</th>
-            <th>Descrição</th>
-            <th class="action">Editar</th>
-            <th class="action">Excluir</th>
-          </tr>
-        </thead>
+ 
+    <div class="container">
+      <div class="header">
+        <i class="bx bx-bell icon"><span>Ocorrências</span></i>
+        <button @click="openModal(null)" id="new">Criar Ocorrências</button>
+      </div>
+ 
+      <div class="table">
+        <table>
+          <thead>
+            <tr>
+              <th>Título</th>
+              <th>Descrição</th>
+              <th>Data</th>
+              <th class="action">Editar</th>
+              <th class="action">Excluir</th>
+            </tr>
+          </thead>
           <tbody>
-            <tr v-for="(item, index) in items" :key="index">
-              <td>{{ item.title }}</td>
-              <td>{{ item.description }}</td>
-              <td class="action">
-                <button @click="editItem(index)" id="edit">Editar</button>
-              </td>
-              <td class="action">
-                <button @click="deleteItem(index)" id="delete">Excluir</button>
-              </td>
+            <tr v-for="(occurrence, index) in occurrences" :key="index">
+              <td>{{ occurrence ? occurrence.titulo : '' }}</td>
+              <td>{{ occurrence ? occurrence.descricao : '' }}</td>
+              <td>{{ occurrence ? occurrence.data : '' }}</td>
+              <td class="action"><button @click="openModal(occurrence)"><i class='bx bx-edit'></i></button></td>
+              <td class="action"><button @click="deleteItem(occurrence.id)"><i class='bx bx-trash'></i></button></td>
             </tr>
           </tbody>
-      </table>
-    </div>
-
-    <div class="modal-container" v-show="modalVisible">
-      <div class="modal">
-        <form @submit.prevent="saveObject">
-          <label for="m-title">Título</label>
-          <input id="m-title" type="text" v-model="title" required/>
-
-          <label for="m-description">Descrição</label>
-          <input id="m-description" type="text" v-model="description" required/>
-
-          <button type="submit" id="btnSave">Salvar</button>
-        </form>
-        <button @click="closeModal">Fechar</button>
+        </table>
+      </div>
+ 
+      <div class="modal-container">
+        <div class="modal">
+          <form>
+            <label for="m-title">Título</label>
+            <input id="m-title" v-model="titulo" type="text" required/>
+            <label for="m-description">Descrição</label>
+            <input id="m-description" v-model="descricao" type="text" required/>
+            <label for="m-date">Data</label>
+            <input id="m-date" v-model="data" type="date" required/>
+            <button @click.prevent="saveItem">{{ isEditing ? 'Atualizar' : 'Salvar' }}</button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
 </template>
-
+ 
 <script>
+import axios from 'axios';
+ 
 export default {
-  name: 'Occurrence',
+  data() {
+    return {
+      occurrences: [],
+      titulo: '',
+      descricao: '',
+      data: '',
+      isEditing: false,
+      editId: null
+    };
+  },
+  methods: {
+    openModal(occurrence) {
+      if (occurrence) {
+        this.isEditing = true;
+        this.titulo = occurrence.titulo;
+        this.descricao = occurrence.descricao;
+        this.data = occurrence.data;
+        this.editId = occurrence.id;
+      } else {
+        this.isEditing = false;
+        this.editId = null;
+        this.resetForm();
+      }
+      const modal = document.querySelector('.modal-container');
+      modal.classList.add('active');
+      modal.addEventListener('click', this.closeModalOutside);
+    },
+    closeModalOutside(event) {
+      const modal = document.querySelector('.modal-container');
+      if (!event.target.closest('.modal')) {
+        modal.classList.remove('active');
+        modal.removeEventListener('click', this.closeModalOutside);
+      }
+    },
+    saveItem() {
+      if (!this.titulo || !this.descricao || !this.data) {
+        alert('Por favor, preencha todos os campos.');
+        return;
+      }
+
+      const occurrenceData = {
+        titulo: this.titulo,
+        descricao: this.descricao,
+        data: this.data,
+      };
+
+      if (this.isEditing) {
+        this.updateItem(occurrenceData);
+      } else {
+        this.createItem(occurrenceData);
+      }
+    },
+    createItem(occurrenceData) {
+      axios.post('http://localhost:8080/newcomunidado/1', occurrenceData)
+        .then(response => {
+          console.log(response.data);
+          this.resetForm();
+          this.closeModal();
+        })
+        .catch(error => {
+          console.error('Erro ao enviar dados:', error);
+        });
+    },
+    updateItem(occurrenceData) {
+        axios.put(`http://localhost:8080/putcomunidado/${this.editId}`, occurrenceData)
+            .then(response => {
+                console.log('Atualizado com sucesso:', response.data);
+                const index = this.occurrences.findIndex(item => item.id === this.editId);
+                if (index !== -1) {
+                    this.occurrences.splice(index, 1, response.data);
+                }
+                this.resetForm();
+                this.closeModal();
+            })
+            .catch(error => {
+                console.error('Erro ao atualizar:', error);
+            });
+    },
+    deleteItem(id) {
+      const confirmDelete = confirm('Tem certeza que deseja excluir?');
+      if (confirmDelete) {
+        axios.delete(`http://localhost:8080/deletecomunidado/${id}`)
+          .then(response => {
+            console.log('Excluído com sucesso:', response.data);
+            this.occurrences = this.occurrences.filter(occurrence => occurrence.id !== id);
+          })
+          .catch(error => {
+            console.error('Erro ao excluir:', error);
+          });
+      }
+    },
+    resetForm() {
+      this.titulo = '';
+      this.descricao = '';
+      this.data = '';
+    },
+    closeModal() {
+      const modal = document.querySelector('.modal-container');
+      modal.classList.remove('active');
+      modal.removeEventListener('click', this.closeModalOutside);
+    }
+  },
+  mounted() {
+    axios.get('http://localhost:8080/comunidadouser/1')
+      .then(response => {
+        this.occurrences = response.data;
+      })
+      .catch(error => {
+        console.error('Erro ao carregar:', error);
+      });
+  }
 }
 </script>
 
-<style scoped>
+<style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;700&family=Roboto:wght@100;300;400;500;700;900&family=Source+Sans+Pro:wght@200;300;400;600;700;900&display=swap');
 
 * {
@@ -68,18 +179,17 @@ export default {
   font-family: 'Poppins', sans-serif;
 }
 
-template{
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;;
-  background-color: var(--body-color);
+.container {
+  width: 80%;
+  height: 75%;
+  margin: 115px auto 0 180px; 
+  border: none;
+  background: white;
+  position: fixed;
 }
 
 .title {
   text-align: left;
-  margin-top: 25px;
   margin-bottom: 20px;
   margin-left: 120px;
   position: fixed;
@@ -102,35 +212,136 @@ button {
   cursor: pointer;
 }
 
-#edit {
+.header {
+  min-height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: auto 12px;
+}
+
+.header span {
+  font-weight: 900;
+  font-size: 20px;
+  word-break: break-all;
+}
+
+#new {
   font-size: 16px;
   padding: 8px;
   border-radius: 5px;
-  border: 1px solid #C4C4C4;
+  border: 1px solid #C4C4C4; 
+  color: #4070EC;
+  background-color: white;
+}
+
+#new:hover {
   color: white;
   background-color: #4070EC;
 }
 
-#delete {
-  font-size: 16px;
-  padding: 8px;
-  border-radius: 5px;
-  border: 1px solid red;
-  color: white;
-  background-color: red;
+.table {
+  padding: 10px;
+  width: auto;
+  height: inherit;
+  overflow: auto;
 }
 
-.container {
-  width: 80%;
-  height: 75%;
-  margin-top: 115px;
-  margin-left: 50px;
-  border: none;
-  background: white;
-    position: fixed;
+.table::-webkit-scrollbar {
+  width: 12px;
+  background-color: whitesmoke; 
 }
 
-.header {
+.table::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: darkgray; 
+}
+
+table {
+  width: 100%;
+  border-spacing: 10px;
+  word-break: break-all;
+  border-collapse: collapse;
+}
+
+thead {
+  background-color: whitesmoke;
+}
+
+tr {
+  border-bottom: 1px solid rgb(238, 235, 235)!important;
+}
+
+tbody tr td {
+  vertical-align: text-top;
+  padding: 6px;
+  max-width: 50px;
+}
+
+thead tr th {
+  padding: 5px;
+  text-align: start;
+  margin-bottom: 50px;
+}
+
+tbody tr {
+  margin-bottom: 50px;
+}
+
+thead tr th.action {
+  width: 100px!important;
+  text-align: center;
+}
+
+tbody tr td.action {
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .container {
+    font-size: 10px;
+  }
+  
+  .header span {
+    font-size: 15px;
+  }
+
+  #new {
+    padding: 5px;
+    font-size: 10px;
+  }
+
+  thead tr th.action {
+    width: auto!important;
+  }
+  
+  td button i {
+    font-size: 20px!important;
+  }
+
+  td button i:first-child {
+    margin-right: 0;
+  }
+
+  .modal {
+    width: 90%!important;
+  }
+
+  .modal label {
+    font-size: 12px!important;
+  }
+}
+
+.modal-container {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  z-index: 999;
+  align-items: center;
   justify-content: center;
 }
 
