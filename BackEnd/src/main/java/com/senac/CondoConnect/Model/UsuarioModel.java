@@ -22,9 +22,9 @@ public class UsuarioModel {
 	private String nomeUsuario;
 	@Column(nullable=false)
 	private String apartamentoUsuario;
-	@Column(nullable= false)
-	private String emailUsuario;
 	@Column(nullable= false, unique=true)
+	private String emailUsuario;
+	@Column(nullable= false)
 	private String senhaUsuario;
 	@OneToMany
 	private List<ComunicadoModel> comunicadolist;
@@ -81,10 +81,8 @@ public class UsuarioModel {
     public List<AchadoModel> getAchadolist() {
         return achadolist;
     }
-
     public void setAchadolist(List<AchadoModel> achadolist) {
         this.achadolist = achadolist;
-    }
-	
+    }	
 
 }
