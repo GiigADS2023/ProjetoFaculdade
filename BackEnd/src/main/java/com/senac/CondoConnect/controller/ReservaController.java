@@ -16,36 +16,30 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.senac.CondoConnect.Model.EspacoModel;
 import com.senac.CondoConnect.Model.ReservaModel;
 import com.senac.CondoConnect.Model.UsuarioModel;
 import com.senac.CondoConnect.dtos.ReservaRecord;
-import com.senac.CondoConnect.service.EspacoService;
 import com.senac.CondoConnect.service.ReservaService;
 import com.senac.CondoConnect.service.UsuarioService;
 
 import jakarta.validation.Valid;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173/meeting")
+@CrossOrigin(origins = "*")
 public class ReservaController {
 
 	@Autowired
 	ReservaService reservaservice; 
 	@Autowired
 	UsuarioService usuarioservice; 
-	@Autowired
-	EspacoService espacoservice; 
 	
-	@PostMapping(value ="/newreserva/{iduser}/{idespaco}") //retorna 201
-	public ResponseEntity<Object> saveReserva(@RequestBody @Valid ReservaRecord reservadto, @PathVariable("iduser") int iduser, @PathVariable("idespaco") int idespaco) {
+	@PostMapping(value ="/newreserva/{iduser}") //retorna 201
+	public ResponseEntity<Object> saveReserva(@RequestBody @Valid ReservaRecord reservadto, @PathVariable("iduser") int iduser) {
 		
 		Optional<UsuarioModel> usuariomodel = usuarioservice.findById(iduser);
-		Optional<EspacoModel> espacomodel = espacoservice.findById(idespaco);
 		var reservamodel = new ReservaModel();
 		BeanUtils.copyProperties(reservadto, reservamodel);
 		reservamodel.setUsuario(usuariomodel.get());
-		reservamodel.setEspaco(espacomodel.get());
 		return ResponseEntity.status(HttpStatus.CREATED).body(reservaservice.save(reservamodel));
 	}
 	

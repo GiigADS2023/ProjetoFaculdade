@@ -33,7 +33,7 @@ public class AssembleiaController {
 	@Autowired
 	UsuarioService usuarioservice; 
 	
-	@PostMapping(value ="/	/{id}") //retorna 201
+	@PostMapping(value ="newassembleia/{id}") //retorna 201
 	public ResponseEntity<Object> saveAssembleia(@RequestBody @Valid AssembleiaRecord assembleiadto, @PathVariable("id") int id) {
 		
 		Optional<UsuarioModel> usuariomodel = usuarioservice.findById(id);

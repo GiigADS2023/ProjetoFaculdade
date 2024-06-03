@@ -3,7 +3,13 @@ package com.senac.CondoConnect.Model;
 
 import java.util.Date;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 
 @Entity
@@ -13,17 +19,14 @@ public class ReservaModel {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
-	
 	@Column(nullable= false)
 	private String comentario;
 	@ManyToOne
 	private UsuarioModel usuario;
-	@ManyToOne
-	private EspacoModel espaco;
 	@Column(nullable= false)
-	private Date dataInicio;
+	private String espaco;
 	@Column(nullable= false)
-	private Date dataFinal;
+	private Date data;
 	
 	public int getId() {
 		return id;
@@ -43,23 +46,17 @@ public class ReservaModel {
 	public void setUsuario(UsuarioModel usuario) {
 		this.usuario = usuario;
 	}
-	public EspacoModel getEspaco() {
+	public String getEspaco() {
 		return espaco;
 	}
-	public void setEspaco(EspacoModel espaco) {
+	public void setEspaco(String espaco) {
 		this.espaco = espaco;
 	}
-	public Date getDataInicio() {
-		return dataInicio;
+	public Date getData() {
+		return data;
 	}
-	public void setDataInicio(Date dataInicio) {
-		this.dataInicio = dataInicio;
-	}
-	public Date getDataFinal() {
-		return dataFinal;
-	}
-	public void setDataFinal(Date dataFinal) {
-		this.dataFinal = dataFinal;
+	public void setData(Date dataInicio) {
+		this.data = dataInicio;
 	}
 
 	

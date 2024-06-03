@@ -25,7 +25,7 @@ import com.senac.CondoConnect.service.UsuarioService;
 import jakarta.validation.Valid;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173/meeting")
+@CrossOrigin(origins = "*")
 public class ComunicadoController {
 
 	@Autowired

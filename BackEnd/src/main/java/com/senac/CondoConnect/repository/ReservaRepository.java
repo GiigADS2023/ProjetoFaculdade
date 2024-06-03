@@ -17,6 +17,6 @@ public interface ReservaRepository extends JpaRepository<ReservaModel, UUID>{
 	@Query(nativeQuery = true, value = "select * from reserva where id = :id_re")
 	Optional<ReservaModel> findById(int id_re);
 
-	@Query(nativeQuery = true, value = "select * from reserva where month(data_inicio) = :mes")
+	@Query(nativeQuery = true, value = "select * from reserva where month(data) = :mes")
 	List<ReservaModel> findByMes(int mes);
 }
