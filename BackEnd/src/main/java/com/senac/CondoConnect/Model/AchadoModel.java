@@ -8,8 +8,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-@Entity
-@Table(name="Achado")
+    @Entity
+    @Table(name="Achado")
 public class AchadoModel {
 	
 	@Id
