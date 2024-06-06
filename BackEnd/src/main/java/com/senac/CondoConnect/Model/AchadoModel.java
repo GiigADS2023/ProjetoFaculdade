@@ -8,7 +8,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-    @Entity
+import java.util.Date;
+
+@Entity
     @Table(name="Achado")
 public class AchadoModel {
 	
@@ -19,6 +21,8 @@ public class AchadoModel {
 	private String descricaoAchado;
 	@Column(nullable= false)
 	private String tituloAchado;
+    @Column(nullable= false)
+    private Date data;
 	@ManyToOne
 	private UsuarioModel usuario;
 
@@ -44,6 +48,14 @@ public class AchadoModel {
 
     public void setTituloAchado(String tituloAchado) {
         this.tituloAchado = tituloAchado;
+    }
+
+    public Date getData() {
+        return data;
+    }
+
+    public void setData(Date data) {
+        this.data = data;
     }
 
     public UsuarioModel getUsuario() {

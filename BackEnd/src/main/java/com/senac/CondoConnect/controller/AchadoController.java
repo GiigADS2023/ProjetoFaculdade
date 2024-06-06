@@ -27,7 +27,7 @@ public class AchadoController {
 	
 	@PostMapping(value ="/newachado/{id}") //retorna 201
 	public ResponseEntity<Object> saveAchado(@RequestBody @Valid AchadoRecord achadodto, @PathVariable("id") int id) {
-		
+
 		Optional<UsuarioModel> usuariomodel = usuarioservice.findById(id);
 		var achadomodel = new AchadoModel();
 		BeanUtils.copyProperties(achadodto, achadomodel);
