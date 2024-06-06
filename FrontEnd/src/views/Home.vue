@@ -11,7 +11,7 @@ let achadosPerdidos = ref([]);
 
 // Função para buscar dados
 const fetchData = () => {
-  axios.get('http://localhost:8080/reservas')
+  axios.get('http://localhost:8080/reserva')
     .then(response => {
       reservas.value = response.data;
     })
@@ -19,7 +19,7 @@ const fetchData = () => {
       console.error('Erro ao obter reservas:', error);
     });
 
-  axios.get('http://localhost:8080/ocorrencias')
+  axios.get('http://localhost:8080/comunicado')
     .then(response => {
       ocorrencias.value = response.data;
     })
@@ -27,7 +27,7 @@ const fetchData = () => {
       console.error('Erro ao obter ocorrências:', error);
     });
 
-  axios.get('http://localhost:8080/reunioes')
+  axios.get('http://localhost:8080/assembleia')
     .then(response => {
       reunioes.value = response.data;
     })
@@ -35,7 +35,7 @@ const fetchData = () => {
       console.error('Erro ao obter reuniões:', error);
     });
 
-  axios.get('http://localhost:8080/achados-perdidos')
+  axios.get('http://localhost:8080/achado')
     .then(response => {
       achadosPerdidos.value = response.data;
     })

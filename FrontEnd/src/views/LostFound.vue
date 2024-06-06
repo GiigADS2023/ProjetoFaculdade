@@ -24,8 +24,8 @@
           </thead>
           <tbody>
             <tr v-for="(lostfound, index) in lostfounds" :key="index">
-              <td>{{ lostfound ? lostfound.titulo : '' }}</td>
-              <td>{{ lostfound ? lostfound.descricao : '' }}</td>
+              <td>{{ lostfound ? lostfound.tituloAchado : '' }}</td>
+              <td>{{ lostfound ? lostfound.descricaoAchado : '' }}</td>
               <td>{{ lostfound ? lostfound.data : '' }}</td>
               <td class="action"><button @click="openModal(lostfound)"><i class='bx bx-edit'></i></button></td>
               <td class="action"><button @click="deleteItem(lostfound.id)"><i class='bx bx-trash'></i></button></td>
@@ -38,9 +38,9 @@
         <div class="modal">
           <form>
             <label for="m-title">Título</label>
-            <input id="m-title" v-model="titulo" type="text" required/>
+            <input id="m-title" v-model="tituloAchado" type="text" required/>
             <label for="m-description">Descrição</label>
-            <input id="m-description" v-model="descricao" type="text" required/>
+            <input id="m-description" v-model="descricaoAchado" type="text" required/>
             <label for="m-date">Data</label>
             <input id="m-date" v-model="data" type="date" required/>
             <button @click.prevent="saveItem">{{ isEditing ? 'Atualizar' : 'Salvar' }}</button>
@@ -58,8 +58,8 @@ export default {
   data() {
     return {
       lostfounds: [],
-      titulo: '',
-      descricao: '',
+      tituloAchado: '',
+      descricaoAchado: '',
       data: '',
       isEditing: false,
       editId: null
@@ -69,8 +69,8 @@ export default {
     openModal(lostfound) {
       if (lostfound) {
         this.isEditing = true;
-        this.titulo = lostfound.titulo;
-        this.descricao = lostfound.descricao;
+        this.tituloAchado = lostfound.tituloAchado;
+        this.descricaoAchado = lostfound.descricaoAchado;
         this.data = lostfound.data;
         this.editId = lostfound.id;
       } else {
@@ -90,14 +90,14 @@ export default {
       }
     },
     saveItem() {
-      if (!this.titulo || !this.descricao || !this.data) {
+      if (!this.tituloAchado || !this.descricaoAchado || !this.data) {
         alert('Por favor, preencha todos os campos.');
         return;
       }
 
       const lostfoundData = {
-        titulo: this.titulo,
-        descricao: this.descricao,
+        tituloAchado: this.tituloAchado,
+        descricaoAchado: this.descricaoAchado,
         data: this.data,
       };
 
@@ -147,8 +147,8 @@ export default {
       }
     },
     resetForm() {
-      this.titulo = '';
-      this.descricao = '';
+      this.tituloAchado = '';
+      this.descricaoAchado = '';
       this.data = '';
     },
     closeModal() {
@@ -158,7 +158,7 @@ export default {
     }
   },
   mounted() {
-    axios.get('http://localhost:8080/achadouser/1')
+    axios.get('http://localhost:8080/achadolistuser/1')
       .then(response => {
         this.lostfounds = response.data;
       })
