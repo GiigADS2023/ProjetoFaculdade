@@ -2,6 +2,7 @@ package com.senac.CondoConnect.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,5 +32,4 @@ public class ReservaService {
 	    public List<ReservaModel> findByMes(int mes){ // vai retornar uma lista de Posts
 	        return reservaRepository.findByMes(mes);
 	    }
-		
 }

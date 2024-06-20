@@ -42,7 +42,7 @@
             <label for="m-description">Descrição</label>
             <input id="m-description" v-model="descricaoComunicado" type="text" required/>
             <label for="m-date">Data</label>
-            <input id="m-date" v-model="data" type="date" required/>
+            <input id="m-date" v-model="data" type="date" :min="today" required/>
             <button @click.prevent="saveItem">{{ isEditing ? 'Atualizar' : 'Salvar' }}</button>
           </form>
         </div>
@@ -62,7 +62,8 @@ export default {
       descricaoComunicado: '',
       data: '',
       isEditing: false,
-      editId: null
+      editId: null,
+      today: new Date().toISOString().split('T')[0] // Obter data atual no formato YYYY-MM-DD
     };
   },
   methods: {
@@ -95,6 +96,13 @@ export default {
     saveItem() {
       if (!this.tituloComunicado || !this.descricaoComunicado || !this.data) {
         alert('Por favor, preencha todos os campos.');
+        return;
+      }
+
+      // Verificar se a data é anterior ao dia atual
+      const today = new Date().toISOString().split('T')[0];
+      if (this.data < today) {
+        alert('A data da ocorrência não pode ser anterior ao dia de hoje.');
         return;
       }
 
@@ -131,6 +139,12 @@ export default {
         });
     },
     updateItem(occurrenceData) {
+      const today = new Date().toISOString().split('T')[0];
+      if (occurrenceData.data < today) {
+        alert('A data da ocorrência não pode ser anterior ao dia de hoje.');
+        return;
+      }
+
       axios.put(`http://localhost:8080/putcomunicado/${this.editId}`, occurrenceData)
         .then(response => {
           console.log('Atualizado com sucesso:', response.data);

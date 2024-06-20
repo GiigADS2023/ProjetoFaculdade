@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="template">
     <div class="contact-info">
       <h3>Bem-vindo(a)</h3>
       <h4>Em caso de dúvidas ou melhorias, entre em contato conosco:</h4>
@@ -33,7 +33,6 @@
           </div>
           <ul v-if="panel.items.length > 0" class="notification-list">
             <li class="notification-item" v-for="(item, i) in panel.items" :key="i">
-              <button class="close-button" @click="removeNotification(panel.title, i)">X</button>
               <button class="minimize-button" @click="minimizeNotification(panel.title, i)">
                 {{ item.minimized ? '+' : '-' }}
               </button>
@@ -139,42 +138,6 @@ watch([reunioes, ocorrencias, achadosPerdidos], () => {
     }
   ];
 });
-
-// Remover notificação
-const removeNotification = (panelTitle, index) => {
-  try {
-    if (panelTitle === 'Reuniões') {
-      reunioes.value.splice(index, 1);
-    } else if (panelTitle === 'Ocorrências') {
-      ocorrencias.value.splice(index, 1);
-    } else if (panelTitle === 'Achados e perdidos') {
-      achadosPerdidos.value.splice(index, 1);
-    }
-
-    // Atualiza os painéis apenas após a remoção local
-    panels.value = [
-      {
-        icon: 'bx bx-user-voice icon',
-        title: 'Reuniões',
-        items: [...reunioes.value]  // Cria uma cópia para garantir a reatividade
-      },
-      {
-        icon: 'bx bx-bell icon',
-        title: 'Ocorrências',
-        items: [...ocorrencias.value]  // Cria uma cópia para garantir a reatividade
-      },
-      {
-        icon: 'bx bx-like icon',
-        title: 'Achados e perdidos',
-        items: [...achadosPerdidos.value]  // Cria uma cópia para garantir a reatividade
-      }
-    ];
-  } catch (error) {
-    console.error('Erro ao remover notificação:', error);
-    errorMessage.value = 'Erro ao remover notificação. Por favor, tente novamente mais tarde.';
-  }
-};
-
 
 // Minimizar/maximizar notificação
 const minimizeNotification = (panelTitle, index) => {

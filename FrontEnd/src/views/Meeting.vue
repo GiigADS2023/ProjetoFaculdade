@@ -1,9 +1,9 @@
 <template>
   <div>
-      <div class="title">
-        <h4>Reuniões</h4>
-        <h6>Condomínio >> Reunião >> Alterar</h6>
-      </div>
+    <div class="title">
+      <h4>Reuniões</h4>
+      <h6>Condomínio >> Reunião >> Alterar</h6>
+    </div>
  
     <div class="container">
       <div class="header">
@@ -44,7 +44,7 @@
             <label for="m-description">Descrição</label>
             <input id="m-description" v-model="descricao" type="text" required/>
             <label for="m-date">Data</label>
-            <input id="m-date" v-model="data" type="date" required/>
+            <input id="m-date" v-model="data" type="date" :min="today" required/>
             <label for="m-hour">Hora</label>
             <input id="m-hour" v-model="hora" type="time" required/>
             <button @click.prevent="saveItem">{{ isEditing ? 'Atualizar' : 'Salvar' }}</button>
@@ -67,7 +67,8 @@ export default {
       data: '',
       hora: '',
       isEditing: false,
-      editId: null
+      editId: null,
+      today: new Date().toISOString().split('T')[0] 
     };
   },
   methods: {
@@ -104,9 +105,16 @@ export default {
         return;
       }
 
+      // Verificar se a data é anterior ao dia atual
+      const today = new Date().toISOString().split('T')[0];
+      if (this.data < today) {
+        alert('A data da reunião não pode ser anterior ao dia de hoje.');
+        return;
+      }
+
       let formataHora = this.hora;
-      if(!this.hora.includes(+':00')) {
-        formataHora = this.hora + ':00'
+      if (!this.hora.includes(':00')) {
+        formataHora = this.hora + ':00';
       }
 
       const meetingData = {
@@ -124,7 +132,7 @@ export default {
     },
     createItem(meetingData) {
       const userId = this.getUserId();
-      console.log('Recuperado ID do usuário:', userId);  // Verifica a recuperação
+      console.log('Recuperado ID do usuário:', userId);  
       
       if (!userId) {
         console.error('Usuário não está autenticado.');
@@ -143,19 +151,25 @@ export default {
         });
     },
     updateItem(meetingData) {
-        axios.put(`http://localhost:8080/putassembleia/${this.editId}`, meetingData)
-            .then(response => {
-                console.log('Reunião atualizada com sucesso:', response.data);
-                const index = this.meetings.findIndex(item => item.id === this.editId);
-                if (index !== -1) {
-                    this.meetings.splice(index, 1, response.data);
-                }
-                this.resetForm();
-                this.closeModal();
-            })
-            .catch(error => {
-                console.error('Erro ao atualizar:', error);
-            });
+      const today = new Date().toISOString().split('T')[0];
+      if (meetingData.data < today) {
+        alert('A data da reunião não pode ser anterior ao dia de hoje.');
+        return;
+      }
+
+      axios.put(`http://localhost:8080/putassembleia/${this.editId}`, meetingData)
+        .then(response => {
+          console.log('Reunião atualizada com sucesso:', response.data);
+          const index = this.meetings.findIndex(item => item.id === this.editId);
+          if (index !== -1) {
+            this.meetings.splice(index, 1, response.data);
+          }
+          this.resetForm();
+          this.closeModal();
+        })
+        .catch(error => {
+          console.error('Erro ao atualizar:', error);
+        });
     },
     deleteItem(id) {
       const confirmDelete = confirm('Tem certeza que deseja excluir?');

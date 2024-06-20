@@ -28,6 +28,8 @@
 </template>
 
 <script>
+import AuthService from '@/services/AuthService';
+
 export default {
   name: 'LogInSignUp',
   data() {
@@ -36,21 +38,30 @@ export default {
     };
   },
   methods: {
-    toggleForms() {
-      this.isLogin = !this.isLogin;
-    },
     async loginUser() {
       try {
         const emailUsuario = this.$refs.emailUsuario.value;
         const senhaUsuario = this.$refs.senhaUsuario.value;
+
         const response = await fetch(`http://localhost:8080/validacadastro/${emailUsuario}/${senhaUsuario}`);
+        
+        if (!response.ok) {
+          alert('O e-mail e senha informados estão incorretos');
+          return;
+        }
+
         const userId = await response.json();
-        if (response.ok) {
-          alert('Login bem-sucedido');
+        console.log('Resposta da API (ID do usuário):', userId);
+
+        if (typeof userId === 'number') {
+          AuthService.login('fake-token');  // Substitua 'fake-token' pelo token real se houver
+          console.log('ID do usuário:', userId);
           localStorage.setItem('userId', userId);
+          alert('Login bem-sucedido');
           this.$router.push({ name: 'Home' });
         } else {
-          alert('O e-mail e senha informado está incorreto');
+          alert('Erro ao obter o ID do usuário');
+          console.error('ID do usuário não é um número:', userId);
         }
       } catch (error) {
         alert('Erro ao tentar se logar');
@@ -63,6 +74,7 @@ export default {
         const apartamentoUsuario = this.$refs.signupFlat.value;
         const emailUsuario = this.$refs.signupemailUsuario.value;
         const senhaUsuario = this.$refs.signupsenhaUsuario.value;
+
         const response = await fetch('http://localhost:8080/newusuario', {
           method: 'POST',
           headers: {
@@ -70,10 +82,11 @@ export default {
           },
           body: JSON.stringify({ nomeUsuario, apartamentoUsuario, emailUsuario, senhaUsuario })
         });
+
         if (response.ok) {
           alert('Cadastro bem-sucedido');
           this.clearSignUpForm();
-          this.isLogin = true; 
+          this.isLogin = true;
         } else {
           alert('Falha no cadastro');
         }
@@ -88,12 +101,15 @@ export default {
       this.$refs.signupemailUsuario.value = '';
       this.$refs.signupsenhaUsuario.value = '';
       document.getElementById('signupCheck').checked = false;
+    },
+    toggleForms() {
+      this.isLogin = !this.isLogin;
     }
   }
-}
+};
 </script>
 
-<style>
+<style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
  
 * {

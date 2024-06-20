@@ -4,13 +4,13 @@
       <h4>Reservas</h4>
       <h6>Condomínio >> Reservas >> Alterar</h6>
     </div>
- 
+
     <div class="container">
       <div class="header">
         <i class="bx bx-bell icon"><span>Reservas</span></i>
         <button @click="openModal(null)" id="new">Criar Reservas</button>
       </div>
- 
+
       <div class="table">
         <table>
           <thead>
@@ -33,11 +33,11 @@
           </tbody>
         </table>
       </div>
- 
+
       <div class="modal-container">
         <div class="modal">
           <form @submit.prevent="saveItem">
-            <label for="m-espaco">ambiente</label>
+            <label for="m-espaco">Ambiente</label>
             <select id="m-espaco" v-model="espaco" required class="styled-select">
               <option value="" disabled>Selecione o ambiente</option>
               <option value="Salão A">Salão A</option>
@@ -52,12 +52,18 @@
         </div>
       </div>
     </div>
+
+    <!-- Alerta -->
+    <div v-if="showAlert" class="alert">
+      <p>{{ alertMessage }}</p>
+      <button @click="closeAlert">Fechar</button>
+    </div>
   </div>
 </template>
- 
+
 <script>
 import axios from 'axios';
- 
+
 export default {
   data() {
     return {
@@ -66,7 +72,10 @@ export default {
       data: '',
       comentario: '',
       isEditing: false,
-      editId: null
+      editId: null,
+      today: new Date().toISOString().split('T')[0],
+      showAlert: false,
+      alertMessage: ''
     };
   },
   methods: {
@@ -77,8 +86,8 @@ export default {
       if (reserve) {
         this.isEditing = true;
         this.espaco = reserve.espaco;
-        this.data = reserve.data;
         this.comentario = reserve.comentario;
+        this.data = reserve.data.split('T')[0]; // Ajuste para remover a hora
         this.editId = reserve.id;
       } else {
         this.isEditing = false;
@@ -96,36 +105,76 @@ export default {
         modal.removeEventListener('click', this.closeModalOutside);
       }
     },
-    saveItem() {
-      if (!this.espaco || !this.data || !this.comentario) {
+    async saveItem() {
+      if (!this.espaco || !this.comentario || !this.data) {
         alert('Por favor, preencha todos os campos.');
+        return;
+      }
+
+      // Verificar se a data é anterior ao dia atual
+      const today = new Date().toISOString().split('T')[0];
+      if (this.data < today) {
+        alert('A data da reserva não pode ser anterior ao dia de hoje.');
         return;
       }
 
       const reserveData = {
         espaco: this.espaco,
-        data: this.data,
         comentario: this.comentario,
+        data: this.data,
       };
 
       if (this.isEditing) {
         this.updateItem(reserveData);
       } else {
-        this.createItem(reserveData);
+        await this.checkAvailabilityAndCreate(reserveData);
       }
+    },
+    async checkAvailabilityAndCreate(reserveData) {
+      try {
+        const response = await axios.get('http://localhost:8080/reserva');
+        const existingReservations = response.data;
+
+        const isReserved = existingReservations.some(reserve => 
+          reserve.data === reserveData.data && reserve.espaco === reserveData.espaco
+        );
+
+        if (isReserved) {
+          const otherSpace = this.findAvailableSpace(existingReservations, reserveData.data);
+          if (otherSpace) {
+            this.alertMessage = `O espaço selecionado já está reservado. Você pode reservar o ${otherSpace}.`;
+          } else {
+            this.alertMessage = 'Todos os espaços estão reservados para esta data. Por favor, escolha outro dia.';
+          }
+          this.showAlert = true;
+        } else {
+          this.createItem(reserveData);
+        }
+      } catch (error) {
+        console.error('Erro ao verificar disponibilidade:', error);
+      }
+    },
+    findAvailableSpace(existingReservations, date) {
+      const allSpaces = ['Salão A', 'Salão B']; // Lista de todos os espaços
+      for (let space of allSpaces) {
+        const isSpaceAvailable = !existingReservations.some(reserve => 
+          reserve.data === date && reserve.espaco === space
+        );
+        if (isSpaceAvailable) {
+          return space;
+        }
+      }
+      return null; // Todos os espaços estão reservados
     },
     createItem(reserveData) {
       const userId = this.getUserId();
-      console.log('Recuperado ID do usuário:', userId);  // Verifica a recuperação
-      
       if (!userId) {
         console.error('Usuário não está autenticado.');
         return;
       }
-    
+
       axios.post(`http://localhost:8080/newreserva/${userId}`, reserveData)
         .then(response => {
-          console.log(response.data);
           this.reserves.push(response.data);
           this.resetForm();
           this.closeModal();
@@ -137,7 +186,6 @@ export default {
     updateItem(reserveData) {
       axios.put(`http://localhost:8080/putreserva/${this.editId}`, reserveData)
         .then(response => {
-          console.log('Atualizado com sucesso:', response.data);
           const index = this.reserves.findIndex(item => item.id === this.editId);
           if (index !== -1) {
             this.reserves.splice(index, 1, response.data);
@@ -154,7 +202,6 @@ export default {
       if (confirmDelete) {
         axios.delete(`http://localhost:8080/deletereserva/${id}`)
           .then(response => {
-            console.log('Excluído com sucesso:', response.data);
             this.reserves = this.reserves.filter(reserve => reserve.id !== id);
           })
           .catch(error => {
@@ -164,23 +211,25 @@ export default {
     },
     resetForm() {
       this.espaco = '';
-      this.data = '';
       this.comentario = '';
+      this.data = '';
     },
     closeModal() {
       const modal = document.querySelector('.modal-container');
       modal.classList.remove('active');
       modal.removeEventListener('click', this.closeModalOutside);
+    },
+    closeAlert() {
+      this.showAlert = false;
     }
   },
   mounted() {
     const userId = this.getUserId();
-   
     if (!userId) {
       console.error('Usuário não está autenticado.');
       return;
     }
-    
+
     axios.get(`http://localhost:8080/reservausuario/${userId}`)
       .then(response => {
         this.reserves = response.data;
@@ -200,6 +249,39 @@ export default {
   padding: 0;
   box-sizing: border-box;
   font-family: 'Poppins', sans-serif;
+}
+
+/* Adicione aqui o estilo para o modal e alerta */
+.modal-container.active {
+  display: block;
+}
+
+.alert {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  padding: 10px;
+  border-radius: 5px;
+  z-index: 1000;
+}
+
+.alert p {
+  margin: 0;
+}
+
+.alert button {
+  background: none;
+  border: none;
+  color: #721c24;
+  cursor: pointer;
+}
+
+.alert button:hover {
+  text-decoration: underline;
 }
 
 .container {
@@ -364,18 +446,21 @@ tbody tr td.action {
   background-color: rgba(0, 0, 0, 0.5);
   display: none;
   z-index: 999;
-  align-items: center;
-  justify-content: center;
 }
 
 .modal {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   padding: 40px;
   background-color: white;
   border-radius: 10px;
   width: 50%;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .modal label {
@@ -456,4 +541,3 @@ td button i:first-child {
   margin-right: 10px;
 }
 </style>
-

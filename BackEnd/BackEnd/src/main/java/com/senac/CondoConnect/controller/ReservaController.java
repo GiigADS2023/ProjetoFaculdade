@@ -1,6 +1,5 @@
 package com.senac.CondoConnect.controller;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,33 +16,39 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.senac.CondoConnect.Model.EspacoModel;
 import com.senac.CondoConnect.Model.ReservaModel;
 import com.senac.CondoConnect.Model.UsuarioModel;
 import com.senac.CondoConnect.dtos.ReservaRecord;
+import com.senac.CondoConnect.service.EspacoService;
 import com.senac.CondoConnect.service.ReservaService;
 import com.senac.CondoConnect.service.UsuarioService;
 
 import jakarta.validation.Valid;
 
 @RestController
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:5173/meeting")
 public class ReservaController {
 
 	@Autowired
 	ReservaService reservaservice; 
 	@Autowired
 	UsuarioService usuarioservice; 
+	@Autowired
+	EspacoService espacoservice; 
 	
-	@PostMapping(value ="/newreserva/{iduser}") //retorna 201
-	public ResponseEntity<Object> saveReserva(@RequestBody @Valid ReservaRecord reservadto, @PathVariable("iduser") int iduser) {
+	@PostMapping(value ="/newreserva/{iduser}/{idespaco}") //retorna 201
+	public ResponseEntity<Object> saveReserva(@RequestBody @Valid ReservaRecord reservadto, @PathVariable("iduser") int iduser, @PathVariable("idespaco") int idespaco) {
 		
 		Optional<UsuarioModel> usuariomodel = usuarioservice.findById(iduser);
+		Optional<EspacoModel> espacomodel = espacoservice.findById(idespaco);
 		var reservamodel = new ReservaModel();
 		BeanUtils.copyProperties(reservadto, reservamodel);
 		reservamodel.setUsuario(usuariomodel.get());
+		reservamodel.setEspaco(espacomodel.get());
 		return ResponseEntity.status(HttpStatus.CREATED).body(reservaservice.save(reservamodel));
-	}	
-
+	}
+	
 	@GetMapping(value = "/reserva")
 	public ResponseEntity<List<ReservaModel>> getPosts(){
 		List<ReservaModel> reserva = reservaservice.findAll();
@@ -88,20 +93,18 @@ public class ReservaController {
 		return ResponseEntity.status(HttpStatus.OK).body("Deleted sucefully");
 	}
 	
-    @PutMapping(value = "/putreserva/{id}")
-    public ResponseEntity<Object> putReserva(@RequestBody @Valid ReservaRecord reservadto, @PathVariable("id") int id) {
-        Optional<ReservaModel> reservaModelOptional = reservaservice.findById(id);
+	@PutMapping(value ="/putreserva/{id}")
+	public ResponseEntity<Object> putReserva(@RequestBody @Valid ReservaRecord reservadto,@PathVariable("id") int id){
+		Optional<ReservaModel> blogappModelOptional = reservaservice.findById(id);
 
-        if (!reservaModelOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("reserva not found.");
-        }
-
-        var reservaModel = reservaModelOptional.get();
-        BeanUtils.copyProperties(reservadto, reservaModel, "id", "usuario");
-        
-        return ResponseEntity.status(HttpStatus.CREATED).body(reservaservice.save(reservaModel));
-    }
-	
+		if(!blogappModelOptional.isPresent()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("reserva not found.");
+		}
+		var reservaModel = new ReservaModel();
+		BeanUtils.copyProperties(reservadto, reservaModel);
+		reservaModel.setId(blogappModelOptional.get().getId());
+		return ResponseEntity.status(HttpStatus.CREATED).body(reservaservice.save(reservaModel));
+	}
 	@GetMapping(value = "/reservames/{mes}")
 	public ResponseEntity<List<ReservaModel>> getRecervasmes(@PathVariable("mes") int mes){
 		List<ReservaModel> reserva = reservaservice.findByMes(mes);
